@@ -1,13 +1,17 @@
 #!/bin/bash
 set -euo pipefail
 
+echo "==> adding yazi apt repo"
+curl -sS https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/debian.griffo.io.gpg
+echo "deb https://debian.griffo.io/apt $(lsb_release -sc 2>/dev/null || echo bookworm) main" | sudo tee /etc/apt/sources.list.d/debian.griffo.io.list
+
 echo "==> updating package lists"
 sudo apt update
 
 echo "==> installing packages"
 sudo apt install -y \
   zsh neovim git btop gh jq bat ripgrep fd-find fzf lazygit \
-  eza wget zoxide nodejs npm openssh-server \
+  eza yazi wget zoxide nodejs npm openssh-server \
   zsh-autosuggestions zsh-syntax-highlighting \
   unzip mandoc curl
 
@@ -34,12 +38,6 @@ curl -fsSL https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/JetB
 unzip -o /tmp/JetBrainsMono.zip -d /usr/local/share/fonts/ 2>/dev/null || true
 fc-cache -fv >/dev/null 2>&1 || true
 rm -f /tmp/JetBrainsMono.zip
-
-echo "==> installing yazi"
-curl -sS https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/debian.griffo.io.gpg
-echo "deb https://debian.griffo.io/apt $(lsb_release -sc 2>/dev/null || echo bookworm) main" | sudo tee /etc/apt/sources.list.d/debian.griffo.io.list
-sudo apt update
-sudo apt install -y yazi
 
 echo "==> installing uv"
 curl -LsSf https://astral.sh/uv/install.sh | sh
