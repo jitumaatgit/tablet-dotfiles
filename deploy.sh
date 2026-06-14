@@ -13,16 +13,16 @@ else
   git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" config status.showUntrackedFiles no
 fi
 
-echo "==> configuring WezTerm autostart"
+echo "==> configuring foot autostart"
 mkdir -p "$HOME/.config/autostart"
-cat > "$HOME/.config/autostart/wezterm.desktop" << 'WZ'
+cat > "$HOME/.config/autostart/foot.desktop" << 'FT'
 [Desktop Entry]
 Type=Application
-Name=WezTerm
-Exec=wezterm start --always-new-process
-Icon=org.wezfurlong.wezterm
+Name=Foot
+Exec=foot --server
+Icon=foot
 Categories=System;TerminalEmulator;
 X-GNOME-Autostart-enabled=true
-WZ
+FT
 
 echo "==> dotfiles deployed. reboot to finish."
