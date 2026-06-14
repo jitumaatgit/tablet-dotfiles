@@ -38,7 +38,7 @@ sudo apt update
 sudo apt install -y wezterm-nightly
 
 echo "==> installing opencode"
-npm i -g opencode-ai@latest
+sudo npm i -g opencode-ai@latest
 
 echo "==> installing JetBrains Mono Nerd Font"
 sudo mkdir -p /usr/local/share/fonts
