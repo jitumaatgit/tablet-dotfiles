@@ -6,7 +6,7 @@ sudo apt update
 
 echo "==> installing packages"
 sudo apt install -y \
-  zsh neovim git btop gh jq bat ripgrep fd-find fzf lazygit \
+  zsh git btop gh jq bat ripgrep fd-find fzf lazygit \
   eza wget zoxide nodejs npm openssh-server \
   zsh-autosuggestions zsh-syntax-highlighting \
   unzip mandoc curl \
@@ -16,7 +16,15 @@ if ! command -v fd >/dev/null; then
   sudo ln -sf "$(command -v fdfind)" /usr/local/bin/fd
 fi
 
-echo "==> installing yazi"
+echo "==> installing neovim (from GitHub, apt version too old)"
+if [ ! -x /usr/local/bin/nvim ] || nvim --version 2>/dev/null | head -1 | grep -qF '0.10'; then
+  NVIM_URL="https://github.com/neovim/neovim/releases/latest/download/nvim-linux-arm64.tar.gz"
+  curl -fsSL "$NVIM_URL" -o /tmp/nvim.tar.gz
+  sudo rm -rf /usr/local/nvim
+  sudo tar -C /usr/local -xzf /tmp/nvim.tar.gz
+  sudo ln -sf /usr/local/nvim-linux-arm64/bin/nvim /usr/local/bin/nvim
+  rm -f /tmp/nvim.tar.gz
+fi
 if ! command -v yazi >/dev/null; then
   curl -sS https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/debian.griffo.io.gpg
   echo "deb https://debian.griffo.io/apt $(lsb_release -sc 2>/dev/null || echo bookworm) main" | sudo tee /etc/apt/sources.list.d/debian.griffo.io.list
