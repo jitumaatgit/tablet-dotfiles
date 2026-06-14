@@ -25,6 +25,8 @@ if [ ! -x /usr/local/bin/nvim ] || nvim --version 2>/dev/null | head -1 | grep -
   sudo ln -sf /usr/local/nvim-linux-arm64/bin/nvim /usr/local/bin/nvim
   rm -f /tmp/nvim.tar.gz
 fi
+
+echo "==> installing yazi"
 if ! command -v yazi >/dev/null; then
   curl -sS https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/debian.griffo.io.gpg
   echo "deb https://debian.griffo.io/apt $(lsb_release -sc 2>/dev/null || echo bookworm) main" | sudo tee /etc/apt/sources.list.d/debian.griffo.io.list
