@@ -36,10 +36,10 @@ fc-cache -fv >/dev/null 2>&1 || true
 rm -f /tmp/JetBrainsMono.zip
 
 echo "==> installing yazi"
-YAZI_VERSION=$(curl -s https://api.github.com/repos/sxyazi/yazi/releases/latest | jq -r .tag_name)
-curl -fsSL "https://github.com/sxyazi/yazi/releases/download/${YAZI_VERSION}/yazi-x86_64-unknown-linux-gnu.zip" -o /tmp/yazi.zip
-unzip -o /tmp/yazi.zip -d /usr/local/bin/ 2>/dev/null || true
-rm -f /tmp/yazi.zip
+curl -sS https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/debian.griffo.io.gpg
+echo "deb https://debian.griffo.io/apt $(lsb_release -sc 2>/dev/null || echo bookworm) main" | sudo tee /etc/apt/sources.list.d/debian.griffo.io.list
+sudo apt update
+sudo apt install -y yazi
 
 echo "==> installing uv"
 curl -LsSf https://astral.sh/uv/install.sh | sh
