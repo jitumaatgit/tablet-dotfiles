@@ -7,7 +7,7 @@ sudo apt update
 echo "==> installing packages"
 sudo apt install -y \
   zsh neovim git btop gh jq bat ripgrep fd-find fzf lazygit \
-  eza yazi wget zoxide nodejs npm openssh-server \
+  eza wget zoxide nodejs npm openssh-server \
   zsh-autosuggestions zsh-syntax-highlighting \
   unzip mandoc curl
 
@@ -34,6 +34,12 @@ curl -fsSL https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/JetB
 unzip -o /tmp/JetBrainsMono.zip -d /usr/local/share/fonts/ 2>/dev/null || true
 fc-cache -fv >/dev/null 2>&1 || true
 rm -f /tmp/JetBrainsMono.zip
+
+echo "==> installing yazi"
+YAZI_VERSION=$(curl -s https://api.github.com/repos/sxyazi/yazi/releases/latest | jq -r .tag_name)
+curl -fsSL "https://github.com/sxyazi/yazi/releases/download/${YAZI_VERSION}/yazi-x86_64-unknown-linux-gnu.zip" -o /tmp/yazi.zip
+unzip -o /tmp/yazi.zip -d /usr/local/bin/ 2>/dev/null || true
+rm -f /tmp/yazi.zip
 
 echo "==> installing uv"
 curl -LsSf https://astral.sh/uv/install.sh | sh
