@@ -9,7 +9,8 @@ sudo apt install -y \
   zsh neovim git btop gh jq bat ripgrep fd-find fzf lazygit \
   eza wget zoxide nodejs npm openssh-server \
   zsh-autosuggestions zsh-syntax-highlighting \
-  unzip mandoc curl
+  unzip mandoc curl \
+  libegl1-mesa-dev libgles2-mesa-dev mesa-va-drivers mesa-vulkan-drivers
 
 if ! command -v fd >/dev/null; then
   sudo ln -sf "$(command -v fdfind)" /usr/local/bin/fd

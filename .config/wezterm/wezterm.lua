@@ -17,7 +17,7 @@ config.use_fancy_tab_bar = false
 config.hide_tab_bar_if_only_one_tab = true
 config.tab_max_width = 32
 config.inactive_pane_hsb = { saturation = 1, brightness = 1 }
-config.front_end = "Software"
+config.front_end = "WebGpu"
 config.colors = {
   compose_cursor = "#94e2d5",
   tab_bar = {
