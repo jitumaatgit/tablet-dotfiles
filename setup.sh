@@ -23,7 +23,7 @@ sudo apt install -y yazi || {
   echo "==> yazi not available via apt (arm64) — installing from GitHub"
   YAZI_VER=$(curl -s https://api.github.com/repos/sxyazi/yazi/releases/latest | jq -r .tag_name)
   curl -fsSL "https://github.com/sxyazi/yazi/releases/download/${YAZI_VER}/yazi-aarch64-unknown-linux-gnu.zip" -o /tmp/yazi.zip
-  unzip -o /tmp/yazi.zip -d /usr/local/bin/
+  sudo unzip -o /tmp/yazi.zip -d /usr/local/bin/
   rm -f /tmp/yazi.zip
 }
 
