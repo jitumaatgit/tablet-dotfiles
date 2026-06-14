@@ -1,0 +1,9 @@
+[user]
+	name = Jitu
+	email = jitumaat@protonmail.com
+[init]
+	defaultBranch = main
+[pull]
+	rebase = true
+[core]
+	editor = nvim

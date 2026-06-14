@@ -1,0 +1,43 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "autoupdate": false,
+  "lsp": true,
+  "plugin": [
+    "@tarquinen/opencode-dcp",
+    "@plannotator/opencode@latest"
+  ],
+  "model": "opencode-go/deepseek-v4-flash",
+  "agent": {
+    "build": {
+      "model": "opencode-go/deepseek-v4-flash"
+    }
+  },
+  "small_model": "opencode-go/deepseek-v4-flash",
+  "mcp": {
+    "exa": {
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp?tools=web_search_exa,web_search_advanced_exa,get_code_context_exa,crawling_exa,company_research_exa,people_search_exa,deep_researcher_start,deep_researcher_check",
+      "enabled": true,
+      "oauth": {}
+    }
+  },
+  "provider": {
+    "opencode-go": {
+      "models": {
+        "kimi-k2.6": {
+          "limit": { "context": 262144, "output": 32768 },
+          "variants": {
+            "high": { "thinking": { "type": "enabled", "budgetTokens": 8192 } },
+            "max": { "thinking": { "type": "enabled", "budgetTokens": 32000 } }
+          }
+        },
+        "deepseek-v4-flash": {
+          "variants": {
+            "high": { "thinking": { "type": "enabled", "budgetTokens": 8192 } },
+            "max": { "thinking": { "type": "enabled", "budgetTokens": 32000 } }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,63 @@
+#!/bin/bash
+set -euo pipefail
+
+echo "==> updating package lists"
+sudo apt update
+
+echo "==> installing packages"
+sudo apt install -y \
+  zsh neovim git btop gh jq bat ripgrep fd-find fzf lazygit \
+  eza yazi wget zoxide nodejs npm openssh-server \
+  zsh-autosuggestions zsh-syntax-highlighting \
+  unzip mandoc curl
+
+if ! command -v fd >/dev/null; then
+  sudo ln -sf "$(command -v fdfind)" /usr/local/bin/fd
+fi
+
+echo "==> installing starship"
+curl -fsSL https://starship.rs/install.sh | sh -s -- -y
+
+echo "==> installing wezterm"
+curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list
+sudo chmod 644 /usr/share/keyrings/wezterm-fury.gpg
+sudo apt update
+sudo apt install -y wezterm-nightly
+
+echo "==> installing opencode"
+npm i -g opencode-ai@latest
+
+echo "==> installing JetBrains Mono Nerd Font"
+sudo mkdir -p /usr/local/share/fonts
+curl -fsSL https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/JetBrainsMono.zip -o /tmp/JetBrainsMono.zip
+unzip -o /tmp/JetBrainsMono.zip -d /usr/local/share/fonts/ 2>/dev/null || true
+fc-cache -fv >/dev/null 2>&1 || true
+rm -f /tmp/JetBrainsMono.zip
+
+echo "==> installing uv"
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+echo "==> creating user fomar"
+if ! id fomar >/dev/null 2>&1; then
+  sudo useradd -m -G sudo,adm,audio,video,netdev,input,render fomar
+  echo "fomar:fomar" | sudo chpasswd
+fi
+
+echo "==> setting hostname"
+sudo hostnamectl set-hostname dgtablet
+
+echo "==> enabling sshd"
+sudo systemctl enable --now ssh
+
+echo "==> setting zsh as default shell for fomar"
+sudo chsh -s /usr/bin/zsh fomar
+
+echo "==> cloning notes repo"
+sudo -u fomar mkdir -p /home/fomar/notes
+sudo -u fomar git clone https://github.com/jitumaatgit/notes /home/fomar/notes 2>/dev/null || echo "notes repo clone failed (ok if not accessible yet)"
+
+echo "==> running deploy.sh as fomar"
+curl -fsSL https://raw.githubusercontent.com/jitumaatgit/tablet-dotfiles/main/deploy.sh | sudo -u fomar bash
+
+echo "==> setup complete. reboot to finish."
