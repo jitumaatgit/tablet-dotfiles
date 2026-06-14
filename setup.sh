@@ -1,23 +1,31 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "==> adding yazi apt repo"
-curl -sS https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/debian.griffo.io.gpg
-echo "deb https://debian.griffo.io/apt $(lsb_release -sc 2>/dev/null || echo bookworm) main" | sudo tee /etc/apt/sources.list.d/debian.griffo.io.list
-
 echo "==> updating package lists"
 sudo apt update
 
 echo "==> installing packages"
 sudo apt install -y \
   zsh neovim git btop gh jq bat ripgrep fd-find fzf lazygit \
-  eza yazi wget zoxide nodejs npm openssh-server \
+  eza wget zoxide nodejs npm openssh-server \
   zsh-autosuggestions zsh-syntax-highlighting \
   unzip mandoc curl
 
 if ! command -v fd >/dev/null; then
   sudo ln -sf "$(command -v fdfind)" /usr/local/bin/fd
 fi
+
+echo "==> installing yazi"
+curl -sS https://debian.griffo.io/EA0F721D231FDD3A0A17B9AC7808B4DD62C41256.asc | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/debian.griffo.io.gpg
+echo "deb https://debian.griffo.io/apt $(lsb_release -sc 2>/dev/null || echo bookworm) main" | sudo tee /etc/apt/sources.list.d/debian.griffo.io.list
+sudo apt update
+sudo apt install -y yazi || {
+  echo "==> yazi not available via apt (arm64) — installing from GitHub"
+  YAZI_VER=$(curl -s https://api.github.com/repos/sxyazi/yazi/releases/latest | jq -r .tag_name)
+  curl -fsSL "https://github.com/sxyazi/yazi/releases/download/${YAZI_VER}/yazi-aarch64-unknown-linux-gnu.zip" -o /tmp/yazi.zip
+  unzip -o /tmp/yazi.zip -d /usr/local/bin/
+  rm -f /tmp/yazi.zip
+}
 
 echo "==> installing starship"
 curl -fsSL https://starship.rs/install.sh | sh -s -- -y
