@@ -71,7 +71,8 @@ sudo hostnamectl set-hostname dgtablet
 echo "==> enabling sshd"
 sudo systemctl enable --now ssh
 
-echo "==> setting zsh as default shell for fomar"
+echo "==> setting zsh as default shell for chaos and fomar"
+sudo chsh -s /usr/bin/zsh chaos
 sudo chsh -s /usr/bin/zsh fomar
 
 echo "==> cloning notes repo"
