@@ -40,23 +40,23 @@ if ! command -v yazi >/dev/null; then
   }
 fi
 
-echo "==> installing starship"
 if ! command -v starship >/dev/null; then
+  echo "==> installing starship"
   curl -fsSL https://starship.rs/install.sh | sh -s -- -y
 fi
 
-echo "==> installing foot (terminal)"
 if ! command -v foot >/dev/null; then
+  echo "==> installing foot (terminal)"
   sudo apt install -y foot
 fi
 
-echo "==> installing opencode"
 if ! command -v opencode >/dev/null; then
+  echo "==> installing opencode"
   sudo npm i -g opencode-ai@latest
 fi
 
-echo "==> installing JetBrains Mono Nerd Font"
 if [ ! -f /usr/local/share/fonts/JetBrainsMonoNerdFont-Regular.ttf ]; then
+  echo "==> installing JetBrains Mono Nerd Font"
   sudo mkdir -p /usr/local/share/fonts
   curl -fsSL https://github.com/ryanoasis/nerd-fonts/releases/download/v3.3.0/JetBrainsMono.zip -o /tmp/JetBrainsMono.zip
   unzip -o /tmp/JetBrainsMono.zip -d /usr/local/share/fonts/ 2>/dev/null || true
@@ -64,13 +64,13 @@ if [ ! -f /usr/local/share/fonts/JetBrainsMonoNerdFont-Regular.ttf ]; then
   rm -f /tmp/JetBrainsMono.zip
 fi
 
-echo "==> installing uv"
 if ! command -v uv >/dev/null; then
+  echo "==> installing uv"
   curl -LsSf https://astral.sh/uv/install.sh | sh
 fi
 
-echo "==> creating user fomar"
 if ! id fomar >/dev/null 2>&1; then
+  echo "==> creating user fomar"
   sudo useradd -m -G sudo,adm,audio,video,netdev,input,render fomar
   echo "fomar:fomar" | sudo chpasswd
 fi
