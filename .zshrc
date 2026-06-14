@@ -37,7 +37,7 @@ alias oc='opencode'
 alias preview='bat --style=plain --paging=always'
 
 export EDITOR="nvim"
-export VISUAL="wezterm start -- nvim"
+export VISUAL="foot nvim"
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 export OPENCODE_DISABLE_AUTOUPDATE=true
 
