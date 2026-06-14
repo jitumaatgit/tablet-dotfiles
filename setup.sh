@@ -82,14 +82,8 @@ if [ ! -d /home/fomar/notes/.git ]; then
 fi
 
 echo "==> configuring LightDM autologin for fomar"
-if [ ! -f /etc/lightdm/lightdm.conf.d/99-fomar-autologin.conf ]; then
-  sudo mkdir -p /etc/lightdm/lightdm.conf.d
-  sudo tee /etc/lightdm/lightdm.conf.d/99-fomar-autologin.conf > /dev/null << 'LDM'
-[Seat:*]
-autologin-user=fomar
-autologin-user-timeout=0
-LDM
-fi
+sudo sed -i 's/^autologin-user=.*/autologin-user=fomar/' /etc/lightdm/lightdm.conf
+grep -q 'autologin-user=fomar' /etc/lightdm/lightdm.conf || echo "autologin-user=fomar" | sudo tee -a /etc/lightdm/lightdm.conf
 
 echo "==> running deploy.sh as fomar"
 curl -fsSL https://raw.githubusercontent.com/jitumaatgit/tablet-dotfiles/main/deploy.sh | sudo -u fomar bash
