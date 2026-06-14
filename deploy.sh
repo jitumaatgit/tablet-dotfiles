@@ -25,10 +25,4 @@ Categories=System;TerminalEmulator;
 X-GNOME-Autostart-enabled=true
 WZ
 
-echo "==> installing nvim plugins"
-nvim --headless "+Lazy! sync" +qa 2>/dev/null || true
-
-echo "==> installing treesitter parsers"
-nvim --headless "+TSInstallSync markdown markdown_inline lua bash rust python" +qa 2>/dev/null || true
-
 echo "==> dotfiles deployed. reboot to finish."
