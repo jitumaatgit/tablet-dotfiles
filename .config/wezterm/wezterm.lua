@@ -45,6 +45,87 @@ wezterm.on("update-right-status", function(window, pane)
   window:set_right_status(name or "")
 end)
 
+local function get_pane_last_command(id)
+  local success, stdout = wezterm.run_child_process({
+    "wezterm", "cli", "get-text", "--pane-id", tostring(id), "--start-line", "-5",
+  })
+  if not success or not stdout then return nil end
+  local lines = {}
+  for line in stdout:gmatch("[^\r\n]+") do
+    if line:match("%S") then table.insert(lines, line) end
+  end
+  for i = #lines, 1, -1 do
+    local cmd = lines[i]:match("[%$#>]%s+(.+)$")
+    if cmd then return cmd:gsub("^%s+", ""):sub(1, 40) end
+    if not lines[i]:match("^%s*$") and not lines[i]:match("^[>%$#]") then
+      return lines[i]:gsub("^%s+", ""):sub(1, 40)
+    end
+  end
+  return nil
+end
+
+local function show_move_pane_selector(window, pane, dir)
+  local success, stdout = wezterm.run_child_process({
+    "wezterm", "cli", "list", "--format", "json",
+  })
+  if not success then
+    window:toast_notification("Failed to list panes")
+    return
+  end
+  local panes = wezterm.json_parse(stdout) or {}
+  local choices = {}
+  for _, p in ipairs(panes) do
+    if p.pane_id ~= pane:pane_id() then
+      local _, cwd = utils.split_from_url(p.cwd or "file://")
+      local dir_display = utils.convert_home_dir(cwd)
+      local size_str = string.format("%dx%d", p.size.cols, p.size.rows)
+      local tab_title = p.tab_title or ("Tab " .. p.tab_id)
+      local last_cmd = get_pane_last_command(p.pane_id)
+      local label
+      if last_cmd and last_cmd ~= "" then
+        label = string.format("#%d | %s | %s | %s | %s", p.pane_id, tab_title, dir_display, size_str, last_cmd)
+      else
+        label = string.format("#%d | %s | %s | %s | %s", p.pane_id, tab_title, dir_display, size_str, p.title or "shell")
+      end
+      table.insert(choices, { id = tostring(p.pane_id), label = label })
+    end
+  end
+  if #choices == 0 then
+    window:toast_notification("No other panes available to move")
+    return
+  end
+  table.sort(choices, function(a, b) return tonumber(a.id) < tonumber(b.id) end)
+  window:perform_action(
+    act.InputSelector({
+      title = "Move Pane - Split " .. dir,
+      choices = choices,
+      fuzzy = true,
+      action = wezterm.action_callback(function(_, _, id)
+        if not id then return end
+        local d = ({ Left = "left", Right = "right", Up = "top", Down = "bottom" })[dir]
+        local ok, _, err = wezterm.run_child_process({
+          "wezterm", "cli", "split-pane", "--move-pane-id", id, "--" .. d, "--percent", "50",
+        })
+        if not ok then window:toast_notification("Failed to move pane: " .. (err or "")) end
+      end),
+    }),
+    pane
+  )
+end
+
+wezterm.on("move-pane-split-left", function(window, pane)
+  show_move_pane_selector(window, pane, "Left")
+end)
+wezterm.on("move-pane-split-down", function(window, pane)
+  show_move_pane_selector(window, pane, "Down")
+end)
+wezterm.on("move-pane-split-up", function(window, pane)
+  show_move_pane_selector(window, pane, "Up")
+end)
+wezterm.on("move-pane-split-right", function(window, pane)
+  show_move_pane_selector(window, pane, "Right")
+end)
+
 config.leader = { key = "Space", mods = "CTRL", timeout_milliseconds = 4000 }
 config.keys = {
   { key = "c", mods = "LEADER", action = act.SpawnTab("CurrentPaneDomain") },

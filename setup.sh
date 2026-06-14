@@ -57,6 +57,14 @@ echo "==> cloning notes repo"
 sudo -u fomar mkdir -p /home/fomar/notes
 sudo -u fomar git clone https://github.com/jitumaatgit/notes /home/fomar/notes 2>/dev/null || echo "notes repo clone failed (ok if not accessible yet)"
 
+echo "==> configuring LightDM autologin for fomar"
+sudo mkdir -p /etc/lightdm/lightdm.conf.d
+sudo tee /etc/lightdm/lightdm.conf.d/99-fomar-autologin.conf > /dev/null << 'LDM'
+[Seat:*]
+autologin-user=fomar
+autologin-user-timeout=0
+LDM
+
 echo "==> running deploy.sh as fomar"
 curl -fsSL https://raw.githubusercontent.com/jitumaatgit/tablet-dotfiles/main/deploy.sh | sudo -u fomar bash
 

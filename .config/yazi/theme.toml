@@ -1,0 +1,8 @@
+[status]
+separator_open = ""
+separator_close = ""
+
+[mode]
+normal_fg = "#cdd6f4"
+select_fg = "#cdd6f4"
+unset_fg = "#cdd6f4"

@@ -10,17 +10,8 @@ else
   echo "==> cloning dotfiles bare repo"
   git clone --bare "$DOTFILES_REPO" "$HOME/.dotfiles"
   git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" checkout -f main
-  git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" config core.bare false
   git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" config status.showUntrackedFiles no
 fi
-
-echo "==> configuring LightDM autologin for fomar"
-sudo mkdir -p /etc/lightdm/lightdm.conf.d
-sudo tee /etc/lightdm/lightdm.conf.d/99-fomar-autologin.conf > /dev/null << 'LDM'
-[Seat:*]
-autologin-user=fomar
-autologin-user-timeout=0
-LDM
 
 echo "==> configuring WezTerm autostart"
 mkdir -p "$HOME/.config/autostart"

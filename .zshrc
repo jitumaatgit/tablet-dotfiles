@@ -20,7 +20,7 @@ export FZF_DEFAULT_COMMAND="fd --type f --strip-cwd-prefix"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type d --strip-cwd-prefix"
 
-eval "$(zoxide init zsh)"
+eval "$(zoxide init zsh --cmd cd)"
 eval "$(starship init zsh)"
 
 function set_win_title() { echo -ne "\033]0; $(basename "$PWD") \007" }
@@ -31,6 +31,7 @@ alias cat='bat --paging=never'
 alias grep='rg --color=auto'
 alias lg='lazygit'
 alias find='fd'
+alias i='z -i'
 alias vim='nvim'
 alias oc='opencode'
 alias preview='bat --style=plain --paging=always'
