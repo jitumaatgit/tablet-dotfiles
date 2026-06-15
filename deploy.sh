@@ -5,7 +5,8 @@ DOTFILES_REPO="https://github.com/jitumaatgit/tablet-dotfiles"
 
 if [ -d "$HOME/.dotfiles" ]; then
   echo "==> updating dotfiles"
-  git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" pull origin main
+  git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" fetch origin
+  git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" reset --hard origin/main
 else
   echo "==> cloning dotfiles bare repo"
   git clone --bare "$DOTFILES_REPO" "$HOME/.dotfiles"
