@@ -35,6 +35,7 @@ alias vim='nvim'
 alias oc='opencode'
 alias dotfiles='git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
 alias preview='bat --style=plain --paging=always'
+alias dotfiles='git --git-dir="$HOME/.dotfiles" --work-tree="$HOME"'
 
 export EDITOR="nvim"
 export VISUAL="foot nvim"

@@ -77,6 +77,8 @@ sudo mkdir -p /home/fomar/.ssh
 sudo chmod 700 /home/fomar/.ssh
 sudo cp ~/.ssh/authorized_keys /home/fomar/.ssh/ 2>/dev/null || true
 sudo chown -R fomar:fomar /home/fomar/.ssh
+sudo -u fomar git config --global user.name "jitumaatgit"
+sudo -u fomar git config --global user.email "jitumaat@email.com"
 
 echo "==> setting hostname"
 sudo hostnamectl set-hostname dgtablet
