@@ -33,6 +33,7 @@ alias find='fd'
 alias i='z -i'
 alias vim='nvim'
 alias oc='opencode'
+alias dotfiles='git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
 alias preview='bat --style=plain --paging=always'
 
 export EDITOR="nvim"
