@@ -85,10 +85,18 @@ echo "==> setting zsh as default shell for chaos and fomar"
 sudo chsh -s /usr/bin/zsh chaos
 sudo chsh -s /usr/bin/zsh fomar
 
-echo "==> cloning notes repo"
-if [ ! -d /home/fomar/notes/.git ]; then
+echo "==> authenticating github CLI for fomar"
+if [ -n "${GH_TOKEN:-}" ] || [ -n "${GITHUB_TOKEN:-}" ]; then
+  sudo -u fomar mkdir -p /home/fomar/.config/gh
+  echo "${GH_TOKEN:-$GITHUB_TOKEN}" | sudo -u fomar gh auth login --with-token
+  sudo -u fomar gh auth setup-git
+  echo "==> cloning notes repo"
   sudo -u fomar mkdir -p /home/fomar/notes
-  sudo -u fomar git clone https://github.com/jitumaatgit/notes /home/fomar/notes 2>/dev/null || echo "notes repo clone failed (ok if not accessible yet)"
+  if [ ! -d /home/fomar/notes/.git ]; then
+    sudo -u fomar git clone https://github.com/jitumaatgit/notes /home/fomar/notes
+  fi
+else
+  echo "==> no GH_TOKEN set — skipping notes clone, run 'gh auth login' as fomar manually"
 fi
 
 echo "==> configuring LightDM autologin for fomar"
