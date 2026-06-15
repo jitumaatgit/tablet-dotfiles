@@ -74,6 +74,10 @@ if ! id fomar >/dev/null 2>&1; then
   sudo useradd -m -G sudo,adm,audio,video,netdev,input,render fomar
   echo "fomar:fomar" | sudo chpasswd
 fi
+sudo mkdir -p /home/fomar/.ssh
+sudo chmod 700 /home/fomar/.ssh
+sudo cp ~/.ssh/authorized_keys /home/fomar/.ssh/ 2>/dev/null || true
+sudo chown -R fomar:fomar /home/fomar/.ssh
 
 echo "==> setting hostname"
 sudo hostnamectl set-hostname dgtablet
