@@ -3,7 +3,7 @@ set -euo pipefail
 
 DOTFILES_REPO="https://github.com/jitumaatgit/tablet-dotfiles"
 
-if [ -d "$HOME/.dotfiles" ]; then
+if git --git-dir="$HOME/.dotfiles" rev-parse --is-bare-repository >/dev/null 2>&1; then
   echo "==> updating dotfiles"
   git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" fetch origin
   git --git-dir="$HOME/.dotfiles" --work-tree="$HOME" reset --hard origin/main
