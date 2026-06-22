@@ -19,6 +19,7 @@
 !/.config/starship.toml
 !/.config/gh
 !/.config/gh/**
+/.config/gh/hosts.yml
 !/.config/bat
 !/.config/bat/**
 !/.config/lazygit

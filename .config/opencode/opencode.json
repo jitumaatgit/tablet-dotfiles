@@ -14,11 +14,13 @@
   },
   "small_model": "opencode-go/deepseek-v4-flash",
   "mcp": {
-    "exa": {
-      "type": "remote",
-      "url": "https://mcp.exa.ai/mcp?tools=web_search_exa,web_search_advanced_exa,get_code_context_exa,crawling_exa,company_research_exa,people_search_exa,deep_researcher_start,deep_researcher_check",
+    "kagi": {
+      "type": "local",
+      "command": ["uvx", "kagimcp"],
       "enabled": true,
-      "oauth": {}
+      "environment": {
+        "KAGI_API_KEY": "sbq4R3Cy56ZsvWPBBOp7jXs64J0_R-WnLu49TcylZhA.yTR89ZsH8H1hMmZj3yl_aI3Socl0ksBSPYZMkfW4vh8"
+      }
     }
   },
   "provider": {
