@@ -33,7 +33,7 @@ Machine-wide setup notes. See `/tmp/opencode/handoff-doogee-u10-debian.md` for h
 
 ## Dotfiles (bare repo)
 
-- Dotfiles live in a **bare git repo** at `~/.dotfiles` with work-tree = `$HOME`. Files like `.zshrc` live directly in `~` — no symlinks. Remote: https://github.com/tech4bot/rk3562deb (branch `main`).
+- Dotfiles live in a **bare git repo** at `~/.dotfiles` with work-tree = `$HOME`. Files like `.zshrc` live directly in `~` — no symlinks. Remote: https://github.com/jitumaatgit/tablet-dotfiles (branch `main`).
 - The `dotfiles` alias (`git --git-dir=$HOME/.dotfiles --work-tree=$HOME`) only exists in interactive zsh. From a script/non-interactive shell, use the full form:
   ```
   git --git-dir=$HOME/.dotfiles --work-tree=$HOME <command>
