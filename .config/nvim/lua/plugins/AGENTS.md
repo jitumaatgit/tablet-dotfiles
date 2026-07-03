@@ -15,3 +15,9 @@
 ### `leader tt` / `leader tc` share grep args structure
 
 Both pickers in `snacks.lua` use identical `args`, `dirs`, and `regex` patterns. Changes to one likely apply to the other — keep in sync.
+
+### Marksman LSP: completion disabled + ARM64 timeout fix
+
+Marksman's LSP completion is intentionally disabled (`completionProvider = nil` in `extend-nvim-lspconfig.lua:10`) — obsidian.nvim provides completion instead. Marksman still provides diagnostics, goto-definition, and cross-references.
+
+On this ARM64 tablet with a large vault (~756 .md files), marksman crashes with `MailboxProcessor.PostAndAsyncReply timed out` (known upstream: #373, #408). Fix: `incremental_references = true` in vault root `.marksman.toml`. The timeout occurs in F#'s MailboxProcessor when processing vault documents on slow CPUs.

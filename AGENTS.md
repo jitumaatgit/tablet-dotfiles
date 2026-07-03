@@ -49,6 +49,11 @@ Machine-wide setup notes. See `/tmp/opencode/handoff-doogee-u10-debian.md` for h
 - Lazygit does NOT work with bare repos — UI floods with untracked files. Use CLI (`dotfiles status`, `dotfiles diff`, `dotfiles add -p`).
 - Deploy elsewhere uses `fetch + reset --hard origin/main`, NOT `pull` (pull fails on bare repos with unstaged changes). The tablet is a consumer, not the source of truth.
 
+## Neovim
+
+- Wayland clipboard: `xclip` alone produces `target STRING not available` errors. Install `wl-clipboard` (`apt install wl-clipboard`) — Neovim auto-detects `wl-copy`/`wl-paste` and prefers them over xclip on Wayland.
+- marksman (Markdown LSP) is installed via Mason as `marksman-linux-arm64` at `~/.local/share/nvim/mason/bin/marksman`. On this slow ARM64 SoC with a large vault (~756 .md files), marksman crashes with `MailboxProcessor.PostAndAsyncReply timed out` unless `incremental_references = true` is set in `~/notes/.marksman.toml`.
+
 ## Wi-Fi constraint (unchanged, see handoff)
 
 - Seekwave EA6621Q via `skw_sdio`, no monitor mode / no injection. 802.11 attacks need a compatible USB Wi-Fi dongle (Alfa) + USB-C hub. `iw list` returns empty.

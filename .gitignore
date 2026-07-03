@@ -33,3 +33,8 @@
 !/.config/gtk-4.0/**
 !/.config/tmux
 !/.config/tmux/**
+!/.config/tmux-sessionizer
+!/.config/tmux-sessionizer/**
+!/.local
+!/.local/bin
+!/.local/bin/tmux-sessionizer

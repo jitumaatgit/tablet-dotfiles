@@ -10,8 +10,9 @@ return {
       "hrsh7th/cmp-path",
       "saadparwaiz1/cmp_luasnip",
       "L3MON4D3/LuaSnip",
-      "onsails/lspkind.nvim",
-    },
+        "onsails/lspkind.nvim",
+        "hrsh7th/cmp-emoji",
+      },
     opts = function()
       local cmp = require("cmp")
       local lspkind = require("lspkind")
@@ -67,6 +68,7 @@ return {
           { name = "luasnip" },
           { name = "path" },
           { name = "obsidian" },
+          { name = "emoji" },
           { name = "buffer" },
         }),
         formatting = {
