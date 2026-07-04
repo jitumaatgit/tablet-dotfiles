@@ -5,6 +5,7 @@
   "SchemaStore.nvim": { "branch": "main", "commit": "6ff1f21b2e2b77ec59f7433ce2d9fbc052d908ac" },
   "aerial.nvim": { "branch": "master", "commit": "28fe6e822ae344544c379d60fcb13c9519a1f08a" },
   "anki.nvim": { "branch": "master", "commit": "2a30bb4307000ff1be542906292418c50d3e7261" },
+  "auto-session": { "branch": "main", "commit": "6cde3874a9283c2db55627acca5f28e4fa402320" },
   "bufferline.nvim": { "branch": "main", "commit": "655133c3b4c3e5e05ec549b9f8cc2894ac6f51b3" },
   "bullets.vim": { "branch": "master", "commit": "3f667eeca58bd4ba411b41edefef51e7fed1a2b1" },
   "catppuccin": { "branch": "main", "commit": "e068ab5f8261f23f6f71ffd8791ae40315b77b9c" },
