@@ -1,6 +1,6 @@
 # AGENTS.md — Doogee U10 Debian tablet (home-wide)
 
-Machine-wide setup notes. See `/tmp/opencode/handoff-doogee-u10-debian.md` for hardware specs, eMMC migration history, and boot chain. See `notes/AGENTS.md` for the Obsidian vault only.
+Machine-wide setup notes. See `notes/AGENTS.md` for the Obsidian vault only. (Note: `/tmp/opencode/handoff-doogee-u10-debian.md` was previously referenced here for hardware/eMMC/boot-chain detail but does NOT exist on disk — boot-chain basics are inlined in the "Kernel, boot chain & eMMC layout" section below; re-create that handoff doc if you do a full write-up.)
 
 ## Debian package quirks (trixie)
 
@@ -10,6 +10,7 @@ Machine-wide setup notes. See `/tmp/opencode/handoff-doogee-u10-debian.md` for h
 - `tshark`/`wireshark-common` postinst blocks `apt install` with an interactive debconf prompt about non-root capture (wireshark group). If apt times out, finish with `sudo DEBIAN_FRONTEND=noninteractive dpkg --configure -a`.
 - Non-interactive tshark config sets `wireshark-common/install-setuid: false` and does NOT create the `wireshark` group. For non-root capture, set it up manually: `sudo groupadd -r wireshark; sudo usermod -aG wireshark fomar; sudo chgrp wireshark /usr/bin/dumpcap; sudo chmod 750 /usr/bin/dumpcap; sudo setcap cap_net_raw,cap_net_admin+eip /usr/bin/dumpcap`. User must re-login (or `sg wireshark -c '...'`) for the group to apply.
 - `getcap` is NOT installed by default; only `setcap` (from `libcap2-bin` is missing — install if you need to verify capabilities).
+- Third-party apt repo `/etc/apt/sources.list.d/debian.griffo.io.list` serves ONLY dev tools (deno, zig, forgejo, lazygit, yazi, zed, uv, fzf, termusic, tigerbeetle, uncloud) — no system/kernel/Android/container packages. Don't look here for waydroid, gbinder, etc.
 
 ## CPU governor / power (RK3562)
 
@@ -30,6 +31,7 @@ Machine-wide setup notes. See `/tmp/opencode/handoff-doogee-u10-debian.md` for h
 - `hx` (Helix 25.01.1), `nmap` 7.95, `tcpdump` 4.99.5, `tshark` 4.4.15, `traceroute` 2.1.6, `mtr` 0.95, `rustc`/`cargo`/`rust-analyzer` 1.96.0 stable, `openssl` 3.5.6, Anki 25.09.05 (flatpak).
 - `gcc git curl dig` were pre-existing. `clang`, `wireshark` GUI, `gdb` not installed.
 - Rust builds on 4x A53 are slow — offload heavy `cargo build` to a desktop/VPS via SSH/mosh; use the tablet as a thin client with `hx` + `rust-analyzer` for editing.
+- Build-offload constraint: the user's main laptop is Windows with WSL2/Docker blocked by corp policy — those are NOT options. For heavy builds, the only offload is a temporary ARM64 cloud VPS (Hetzner CAX11 / AWS Graviton, rent for ~1h), or native overnight build on the tablet (kernel build ~3-4h at `make -j2`; `-j4` OOM-risks on 3.8 GB RAM).
 
 ## Dotfiles (bare repo)
 
@@ -51,9 +53,26 @@ Machine-wide setup notes. See `/tmp/opencode/handoff-doogee-u10-debian.md` for h
 
 ## Neovim
 
+- Config: LazyVim at `~/.config/nvim/` (`init.lua` → `lua/config/` for options/keymaps, `lua/plugins/` for plugin specs, `lua/custom/` for custom modules). Config files also at `~/.local/share/nvim/`.
+- **`glob`/`grep` tools do NOT expand `~`** — always use `/home/fomar/.config/nvim/` (full path) when searching for Neovim config files with these tools. `bash` does expand `~`, so `ls ~/.config/nvim/` works.
 - Wayland clipboard: `xclip` alone produces `target STRING not available` errors. Install `wl-clipboard` (`apt install wl-clipboard`) — Neovim auto-detects `wl-copy`/`wl-paste` and prefers them over xclip on Wayland.
 - marksman (Markdown LSP) is installed via Mason as `marksman-linux-arm64` at `~/.local/share/nvim/mason/bin/marksman`. On this slow ARM64 SoC with a large vault (~756 .md files), marksman crashes with `MailboxProcessor.PostAndAsyncReply timed out` unless `incremental_references = true` is set in `~/notes/.marksman.toml`.
+
+## Kernel, boot chain & eMMC layout
+
+- Running kernel is rockchip BSP `6.1.118` (NOT Debian stock). `/proc/config.gz` is available (IKCONFIG_PROC enabled) — `zcat /proc/config.gz` gives the running config, use as base for rebuilds.
+- `/lib/modules/6.1.118/build` and `.../source` symlinks are DANGLING (point to `/home/cosmo/antigravity/rkdebian/src/kernel` — that user/dir is gone). No kernel headers on disk; DKMS and out-of-tree modules are impossible without re-fetching rockchip BSP source.
+- `/boot` on rootfs is EMPTY — kernel does NOT load from rootfs `/boot`. It lives in a dedicated Android-style boot partition on eMMC. `/proc/cmdline` contains `androidboot.fwver=ddr-v1.06-...,spl-v1.06,bl31-v1.22,bl32-v1.08,uboot--boot` confirming the Android boot chain (DDR init → SPL → TF-A bl31 → bl32 → u-boot) baked into firmware.
+- `fw_printenv` is NOT installed; u-boot env not readable. Whether this u-boot honors an extlinux/syslinux fallback on rootfs (which would make kernel replacement trivial) is untested — test before assuming.
+- Stock Debian 6.12 kernel (`linux-image-6.12.86+deb13-arm64`) ships 48 rockchip DTBs but ZERO for rk3562 (only rk3566/rk3568). Booting it = no display/Wi-Fi(`skw_sdio`)/touch, likely unbootable. Do NOT `apt install` a stock Debian kernel expecting it to work on this tablet.
+- eMMC = `mmcblk2`, ~25 Android-style GPT partitions. Debian root = `mmcblk2p25` (110.4G ext4, label `rootfs-emmc`, mounted at `/`). `mmcblk2p1`–`p18` are firmware/boot (DDR/SPL/bl31/bl32/u-boot/boot_a/boot_b/vendor_boot) — DO NOT `dd`/reformat without a backup. Partition names aren't in `lsblk` output; dump with `sudo sgdisk -p /dev/mmcblk2` (needs `gdap`/`gdisk`).
 
 ## Wi-Fi constraint (unchanged, see handoff)
 
 - Seekwave EA6621Q via `skw_sdio`, no monitor mode / no injection. 802.11 attacks need a compatible USB Wi-Fi dongle (Alfa) + USB-C hub. `iw list` returns empty.
+
+## Waydroid / Android containers
+
+- Waydroid needs binderfs; running kernel has `CONFIG_ANDROID_BINDER_IPC is not set` — `waydroid_container.service` will fail with "binder node not found" until the kernel is rebuilt with `CONFIG_ANDROID_BINDER_IPC=y` + `CONFIG_ANDROID_BINDERFS=y`. No DKMS shortcut (no headers, see above).
+- Waydroid is NOT in trixie apt main, sid, or the griffo repo. Install from upstream: `curl -s https://repo.waydro.id | sudo bash -s -- -s trixie` then `apt install waydroid` (`-s trixie` is an explicitly supported value).
+- Stock Debian 6.12 kernel's `binder_linux.ko` has `CONFIG_ANDROID_BINDERFS is not set` (legacy `/dev/binder` only, not binderfs) AND won't load on 6.1.118 (vermagic mismatch) — irrelevant for this tablet, don't waste time on it.

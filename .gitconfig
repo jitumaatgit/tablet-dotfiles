@@ -13,3 +13,16 @@
 [credential "https://gist.github.com"]
 	helper = 
 	helper = !/usr/bin/gh auth git-credential
+[diff]
+	tool = nvim
+[difftool "nvim"]
+	cmd = nvim -d $LOCAL $REMOTE
+[difftool]
+	prompt = false
+[merge]
+	tool = diffview
+	conflictStyle = zdiff3
+[mergetool "diffview"]
+	cmd = nvim -c "DiffviewOpen"
+[mergetool]
+	prompt = false

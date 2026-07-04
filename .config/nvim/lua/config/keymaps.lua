@@ -8,14 +8,14 @@ local map = vim.keymap.set
 vim.keymap.set(
   { "n", "x" },
   "j",
-  [[v:count ? (v:count >= 3 ? "m'" . v:count : v:count) . 'j' : 'gj']],
+  [[v:count ? (v:count >= 3 ? "m'" . v:count . 'j' : 'j') : 'gj']],
   { noremap = true, expr = true, silent = true }
 )
 
 vim.keymap.set(
   { "n", "x" },
   "k",
-  [[v:count ? (v:count >= 3 ? "m'" . v:count : v:count) . 'k' : 'gk']],
+  [[v:count ? (v:count >= 3 ? "m'" . v:count . 'k' : 'k') : 'gk']],
   { noremap = true, expr = true, silent = true }
 )
 
@@ -23,6 +23,7 @@ vim.keymap.set("i", "jj", "<Esc>")
 vim.keymap.set("i", "kk", "<Esc>")
 vim.keymap.set("i", "jk", "<Esc>")
 vim.keymap.set("i", "kj", "<Esc>")
+vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 vim.keymap.set("n", "gj", [[/^#\+ .*<CR>]], { desc = "Next markdown heading" })
 vim.keymap.set("n", "gk", [[?^#\+ .*<CR>]], { desc = "Previous markdown heading" })
 
