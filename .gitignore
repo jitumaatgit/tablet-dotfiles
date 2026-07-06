@@ -17,6 +17,7 @@
 !/.config/opencode/**
 !/.config/btop
 !/.config/btop/**
+/.config/btop/btop.log
 !/.config/starship.toml
 !/.config/gh
 !/.config/gh/**
@@ -38,3 +39,4 @@
 !/.local
 !/.local/bin
 !/.local/bin/tmux-sessionizer
+!/.local/bin/tmux-restore-picker

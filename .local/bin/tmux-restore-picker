@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Interactive picker for tmux-resurrect snapshots.
+# Lists saved sessions newest-first via fzf, symlinks the choice to `last`,
+# then invokes tmux-resurrect's restore.sh. Bound to <prefix> C-r.
+
+set -euo pipefail
+
+RESURRECT_DIR="${TMUX_RESURRECT_DIR:-$HOME/.local/share/tmux/resurrect}"
+RESTORE_SCRIPT="${TMUX_RESURRECT_SCRIPT:-$HOME/.config/tmux/plugins/tmux-resurrect/scripts/restore.sh}"
+
+if ! command -v fzf &>/dev/null; then
+    echo "fzf not found" >&2
+    exit 1
+fi
+
+if [[ ! -d "$RESURRECT_DIR" ]]; then
+    echo "no resurrect dir: $RESURRECT_DIR" >&2
+    exit 1
+fi
+
+cd "$RESURRECT_DIR"
+
+file=$(ls -1 *.txt 2>/dev/null | sort -r | fzf --prompt='restore: ' --reverse) || exit 0
+
+[[ -z "$file" ]] && exit 0
+
+ln -sf "$file" last
+exec "$RESTORE_SCRIPT"
