@@ -36,6 +36,7 @@ alias grep='rg --color=auto'
 alias lg='lazygit'
 alias find='fd'
 alias i='z -i'
+alias zi='z -i'
 alias vim='nvim'
 alias oc='opencode'
 occ() {
@@ -61,6 +62,7 @@ export EDITOR="nvim"
 export VISUAL="foot nvim"
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 export OPENCODE_DISABLE_AUTOUPDATE=true
+export PLANNOTATOR_DATA_DIR="$HOME/notes/docs/plannotator"
 
 [ -f ~/notes/opencode-server.env ] && . ~/notes/opencode-server.env
 [ -f ~/notes/deepseek.env ] && . ~/notes/deepseek.env
