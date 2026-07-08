@@ -77,3 +77,7 @@ Machine-wide setup notes. See `notes/AGENTS.md` for the Obsidian vault only. (No
 - Waydroid needs binderfs; running kernel has `CONFIG_ANDROID_BINDER_IPC is not set` — `waydroid_container.service` will fail with "binder node not found" until the kernel is rebuilt with `CONFIG_ANDROID_BINDER_IPC=y` + `CONFIG_ANDROID_BINDERFS=y`. No DKMS shortcut (no headers, see above).
 - Waydroid is NOT in trixie apt main, sid, or the griffo repo. Install from upstream: `curl -s https://repo.waydro.id | sudo bash -s -- -s trixie` then `apt install waydroid` (`-s trixie` is an explicitly supported value).
 - Stock Debian 6.12 kernel's `binder_linux.ko` has `CONFIG_ANDROID_BINDERFS is not set` (legacy `/dev/binder` only, not binderfs) AND won't load on 6.1.118 (vermagic mismatch) — irrelevant for this tablet, don't waste time on it.
+
+## Conventions
+
+- All directories and files must be lowercase-kebab-case unless explicitly told otherwise.

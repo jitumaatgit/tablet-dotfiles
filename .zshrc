@@ -46,8 +46,8 @@ occ() {
   fi
 }
 function ocp {
-  mkdir -p ~/notes/90-Archive/prompts
-  local f="$HOME/notes/90-Archive/prompts/$(date +%Y%m%d-%H%M%S).md"
+  mkdir -p ~/notes/90-archive/prompts
+  local f="$HOME/notes/90-archive/prompts/$(date +%Y%m%d-%H%M%S).md"
   ${EDITOR:-nvim} "$f"
   [ -s "$f" ] || return
   local p="$(command awk 'NR==1 && /^---$/{f=1; next} f && /^---$/{f=0; next} !f' "$f")"
