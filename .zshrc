@@ -19,13 +19,18 @@ export FZF_DEFAULT_COMMAND="fd --type f --strip-cwd-prefix"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type d --strip-cwd-prefix"
 
-eval "$(zoxide init zsh --cmd cd)"
-eval "$(starship init zsh)"
+_lazy_init() {
+  eval "$(zoxide init zsh --cmd cd)"
+  eval "$(starship init zsh)"
+  add-zsh-hook -d precmd _lazy_init
+}
 
 function set_win_title() { echo -ne "\033]0; $(basename "$PWD") \007" }
 starship_precmd_user_func="set_win_title"
+add-zsh-hook precmd _lazy_init
 
 alias ls='eza --icons --group-directories-first -a'
+alias bat=batcat
 alias cat='bat --paging=never'
 alias grep='rg --color=auto'
 alias lg='lazygit'
@@ -33,6 +38,7 @@ alias find='fd'
 alias i='z -i'
 alias vim='nvim'
 alias oc='OPENCODE_PERMISSION="allow" opencode'
+alias occ='oc run --command commit'
 alias dotfiles='git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
 alias preview='bat --style=plain --paging=always'
 alias dotfiles='git --git-dir="$HOME/.dotfiles" --work-tree="$HOME"'

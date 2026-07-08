@@ -1,28 +1,32 @@
 ---
-description: git commit and push
-model: opencode/big-pickle
+description: git commit and push using scoped commits
+model: opencode-go/deepseek-v4-flash
 subtask: true
 ---
 
-commit and push
+commit and push using Scoped Commits (https://scopedcommits.com).
 
-make sure it includes a prefix like
-docs:
-tui:
-core:
-ci:
-ignore:
-wip:
+format: `<scope>: <description>` with optional body and trailers.
 
-For anything in the packages/web use the docs: prefix.
+scope = the subsystem, area, or module this commit touches. it is required and
+goes first. derive it from the diff — the files and areas actually changed —
+not from a fixed list. never use a conventional-commit type as the prefix (no
+`feat`, `fix`, `chore`, `docs`, `refactor`, etc.); the description already
+conveys the type.
 
-prefer to explain WHY something was done from an end user perspective instead of
-WHAT was done.
+multiple scopes: use a more general scope that covers them, list them
+comma-separated, or use `treewide` / `all` / `global` if the whole tree is
+touched. reverts, merges, and other special commits may be free-form.
 
-do not do generic messages like "improved agent experience" be very specific
-about what user facing changes were made
+ticket numbers (if any): put in parentheses after the scope, e.g.
+`auth (PROJ-123): fix login`, or in a trailer.
 
-if there are conflicts DO NOT FIX THEM. notify me and I will fix them
+prefer to explain WHY from an end-user perspective instead of WHAT was done.
+be specific about user-facing changes — no generic messages like "improved
+agent experience".
+
+if there are conflicts DO NOT FIX THEM unless I explicitly ask. otherwise
+notify me and I will fix them.
 
 ## GIT DIFF
 

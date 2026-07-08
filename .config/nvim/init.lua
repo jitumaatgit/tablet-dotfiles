@@ -10,7 +10,9 @@ require("custom.task-auto-complete").setup()
 
 -- Filter tasks by file-level tags (requires obsidian.nvim)
 require("custom.obsidian-task-filter").setup({
-  picker = "telescope", -- Uses telescope for better UI
+  picker = "telescope",
   show_completed = false,
   preview_context = 3,
 })
+
+require("custom.trouble-fetch-fix").setup()
