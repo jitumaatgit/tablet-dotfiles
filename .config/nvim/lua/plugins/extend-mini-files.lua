@@ -393,10 +393,10 @@ return {
         set_mark("c", vim.fn.stdpath("config"), "Config")
         set_mark("w", vim.fn.getcwd, "Working directory")
         set_mark("~", "~", "Home")
-        set_mark("d", "~/notes/docs/30-DailyNotes", "Daily Notes")
-        set_mark("a", "~/notes/docs/10-Areas", "Areas")
-        set_mark("r", "~/notes/docs/20-Resources", "Resources")
-        set_mark("p", "~/notes/docs/00-Projects", "Projects")
+        set_mark("d", "~/notes/docs/30-dailynotes", "Daily Notes")
+        set_mark("a", "~/notes/docs/10-areas", "Areas")
+        set_mark("r", "~/notes/docs/20-resources", "Resources")
+        set_mark("p", "~/notes/docs/00-projects", "Projects")
       end,
     })
 

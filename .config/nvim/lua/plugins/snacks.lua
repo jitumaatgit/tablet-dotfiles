@@ -57,9 +57,9 @@ return {
             args = {
               "--no-ignore",
               "--glob",
-              "!docs/90-Archives/**",
+              "!docs/90-archives/**",
               "--glob",
-              "!docs/50-Templates/**",
+              "!docs/50-templates/**",
               "--glob",
               "!docs/plannotator/plans/**",
             },

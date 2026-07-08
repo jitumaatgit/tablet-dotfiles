@@ -4,7 +4,7 @@ local M = {}
 M.config = {
   timestamp_format = "> Completed: %Y-%m-%d %H:%M",
   completed_headings = { "completed", "done", "finished" },
-  daily_notes_folder = "30%-DailyNotes",
+  daily_notes_folder = "30%-dailynotes",
   log_heading = "log",
 }
 

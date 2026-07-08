@@ -1,8 +1,8 @@
 local M = {}
 
 local VAULT_PATH = "/home/fomar/notes"
-local DAILY_NOTES_PATH = VAULT_PATH .. "/docs/30-DailyNotes"
-local WEEKLY_NOTES_PATH = DAILY_NOTES_PATH .. "/WeeklyNotes"
+local DAILY_NOTES_PATH = VAULT_PATH .. "/docs/30-dailynotes"
+local WEEKLY_NOTES_PATH = DAILY_NOTES_PATH .. "/weeklynotes"
 
 local JD_UNIX_EPOCH = 2440588
 local SECONDS_PER_DAY = 86400
@@ -295,7 +295,7 @@ end
 local function add_log_metadata(lines, cache, week_dates)
   for _, d in ipairs(week_dates) do
     local content = cache[d.date_str]
-    local link = string.format("[[30-DailyNotes/%04d/%02d/%s|%s %s]]", d.date.year, d.date.month, d.date_str, d.day_name, d.date_str)
+    local link = string.format("[[30-dailynotes/%04d/%02d/%s|%s %s]]", d.date.year, d.date.month, d.date_str, d.day_name, d.date_str)
     if content then
       local sleep = extract_sleep(content)
       local energy = extract_energy_avg(content)
@@ -370,7 +370,7 @@ table.insert(lines, "## Health dashboard")
   table.insert(lines, "")
 
   for _, d in ipairs(week_dates) do
-    local link_path = string.format("30-DailyNotes/%04d/%02d/%s", d.date.year, d.date.month, d.date_str)
+    local link_path = string.format("30-dailynotes/%04d/%02d/%s", d.date.year, d.date.month, d.date_str)
     local link_text = string.format("- [[%s|%s %s]]", link_path, d.day_name, d.date_str)
     table.insert(lines, link_text)
   end

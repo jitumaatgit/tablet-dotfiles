@@ -37,9 +37,23 @@ alias lg='lazygit'
 alias find='fd'
 alias i='z -i'
 alias vim='nvim'
-alias oc='OPENCODE_PERMISSION="allow" opencode'
-alias occ='oc run --command commit'
-alias dotfiles='git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
+alias oc='opencode'
+occ() {
+  if git rev-parse --git-dir >/dev/null 2>&1; then
+    oc run --command commit
+  else
+    GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME oc run --command commit
+  fi
+}
+function ocp {
+  mkdir -p ~/notes/90-Archive/prompts
+  local f="$HOME/notes/90-Archive/prompts/$(date +%Y%m%d-%H%M%S).md"
+  ${EDITOR:-nvim} "$f"
+  [ -s "$f" ] || return
+  local p="$(command awk 'NR==1 && /^---$/{f=1; next} f && /^---$/{f=0; next} !f' "$f")"
+  [ -n "$p" ] || return
+  opencode --prompt "$p"
+}
 alias preview='bat --style=plain --paging=always'
 alias dotfiles='git --git-dir="$HOME/.dotfiles" --work-tree="$HOME"'
 

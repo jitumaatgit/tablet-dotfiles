@@ -2,6 +2,9 @@
   "$schema": "https://opencode.ai/config.json",
   "autoupdate": false,
   "lsp": true,
+  "permission": {
+    "external_directory": "allow"
+  },
   "plugin": [
     "@tarquinen/opencode-dcp",
     "@plannotator/opencode@latest"

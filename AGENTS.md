@@ -40,6 +40,7 @@ Machine-wide setup notes. See `notes/AGENTS.md` for the Obsidian vault only. (No
   ```
   git --git-dir=$HOME/.dotfiles --work-tree=$HOME <command>
   ```
+- CLI flags (`--git-dir`/`--work-tree`) only apply to that one git invocation. For **subprocesses that spawn git** (e.g. opencode's agent), use env vars instead — they propagate to children: `GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME <command>`. The `occ()` function in `~/.zshrc` uses this pattern with `git rev-parse --git-dir` to auto-detect local repos vs. bare-repo-only dirs.
 - `.gitignore` is **deny-by-default**: starts with `/*` then `!/path` opt-ins. New root-level files/dirs must be explicitly added to `.gitignore` before they can be tracked.
 - Push workflow:
   ```

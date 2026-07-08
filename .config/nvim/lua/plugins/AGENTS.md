@@ -24,6 +24,10 @@ LazyVim uses `<leader>w` as the window-management prefix — any `<leader>w*` ma
 
 Both pickers in `snacks.lua` use identical `args`, `dirs`, and `regex` patterns. Changes to one likely apply to the other — keep in sync.
 
+### obsidian.nvim auto-inserts YAML frontmatter into new `.md` files
+
+`disable_frontmatter` in `obsidian.lua` gates which paths skip frontmatter. Currently excludes `tasks/`, `kanban.md`, `prompts/`. Any new vault subdir that creates `.md` files programmatically AND reads raw content back must be added here, OR the reader must strip the leading `---\n...\n---` block. Files that must change together: `disable_frontmatter` + any shell/script reader of those `.md` files.
+
 ### Marksman LSP: completion disabled + ARM64 timeout fix
 
 Marksman's LSP completion is intentionally disabled (`completionProvider = nil` in `extend-nvim-lspconfig.lua:10`) — obsidian.nvim provides completion instead. Marksman still provides diagnostics, goto-definition, and cross-references.
