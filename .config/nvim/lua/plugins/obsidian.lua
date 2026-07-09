@@ -16,7 +16,7 @@ return {
     workspaces = {
       {
         name = "notes",
-        path = "/home/fomar/notes",
+        path = vim.fn.expand("~/notes"),
       },
     },
     notes_subdir = "",

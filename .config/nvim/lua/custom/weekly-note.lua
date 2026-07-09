@@ -1,8 +1,15 @@
 local M = {}
 
-local VAULT_PATH = "/home/fomar/notes"
-local DAILY_NOTES_PATH = VAULT_PATH .. "/docs/30-dailynotes"
-local WEEKLY_NOTES_PATH = DAILY_NOTES_PATH .. "/weeklynotes"
+local function vault_path()
+  local client = require("obsidian").get_client()
+  return tostring(client.dir)
+end
+local function daily_notes_path()
+  return vault_path() .. "/docs/30-dailynotes"
+end
+local function weekly_notes_path()
+  return daily_notes_path() .. "/weeklynotes"
+end
 
 local JD_UNIX_EPOCH = 2440588
 local SECONDS_PER_DAY = 86400
@@ -82,7 +89,7 @@ end
 local function get_daily_note_path(d)
 	local year = string.format("%04d", d.year)
 	local month = string.format("%02d", d.month)
-	return string.format("%s/%s/%s/%s.md", DAILY_NOTES_PATH, year, month, format_date(d))
+	return string.format("%s/%s/%s/%s.md", daily_notes_path(), year, month, format_date(d))
 end
 
 local function extract_section(content, section_name)
@@ -211,7 +218,7 @@ end
 
 local function get_goals_from_last_week(iso_data)
   local prev = get_adjacent_week(iso_data, -1)
-  local path = string.format("%s/%04d/%04d-W%02d.md", WEEKLY_NOTES_PATH, prev.year, prev.year, prev.week)
+  local path = string.format("%s/%04d/%04d-W%02d.md", weekly_notes_path(), prev.year, prev.year, prev.week)
   local file = io.open(path, "r")
   if not file then return {} end
   local content = file:read("*a")
@@ -237,7 +244,7 @@ local function get_inbox_notes(week_dates)
   local start_time = os.time(week_dates[1].date)
   local end_time = os.time()
 
-  local glob_result = vim.fn.glob(VAULT_PATH .. "/*.md", false, true)
+  local glob_result = vim.fn.glob(vault_path() .. "/*.md", false, true)
   for _, filepath in ipairs(glob_result) do
     local stat = vim.loop.fs_stat(filepath)
     if stat then
@@ -481,7 +488,7 @@ function M.create_weekly_note(opts)
     iso_data = get_iso_data_from_week(tonumber(opts.year), tonumber(opts.week))
   end
 
-	local year_dir = string.format("%s/%04d", WEEKLY_NOTES_PATH, iso_data.year)
+	local year_dir = string.format("%s/%04d", weekly_notes_path(), iso_data.year)
 	ensure_dir(year_dir)
 
 	local filename = string.format("%04d-W%02d.md", iso_data.year, iso_data.week)
