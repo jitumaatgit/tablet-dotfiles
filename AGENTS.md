@@ -78,6 +78,10 @@ Machine-wide setup notes. See `notes/AGENTS.md` for the Obsidian vault only. (No
 - Waydroid is NOT in trixie apt main, sid, or the griffo repo. Install from upstream: `curl -s https://repo.waydro.id | sudo bash -s -- -s trixie` then `apt install waydroid` (`-s trixie` is an explicitly supported value).
 - Stock Debian 6.12 kernel's `binder_linux.ko` has `CONFIG_ANDROID_BINDERFS is not set` (legacy `/dev/binder` only, not binderfs) AND won't load on 6.1.118 (vermagic mismatch) — irrelevant for this tablet, don't waste time on it.
 
+## Shell & environment
+
+- `.zshrc` line 73: `for f in ~/notes/*.env; do . "$f"; done` — dropping any `.env` file in `~/notes/` auto-exports its contents on interactive zsh startup. Preferred way to add new API env vars without editing `.zshrc` directly (e.g. `~/notes/exa.env` for `EXA_API_KEY`).
+
 ## Conventions
 
 - All directories and files must be lowercase-kebab-case unless explicitly told otherwise.
