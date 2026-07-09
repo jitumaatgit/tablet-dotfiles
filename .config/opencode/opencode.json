@@ -24,6 +24,11 @@
       "environment": {
         "KAGI_API_KEY": "sbq4R3Cy56ZsvWPBBOp7jXs64J0_R-WnLu49TcylZhA.yTR89ZsH8H1hMmZj3yl_aI3Socl0ksBSPYZMkfW4vh8"
       }
+    },
+    "exa": {
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp?exaApiKey={env:EXA_API_KEY}",
+      "enabled": true
     }
   },
   "provider": {
