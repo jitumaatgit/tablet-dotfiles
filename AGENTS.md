@@ -11,6 +11,8 @@ Machine-wide setup notes. See `notes/AGENTS.md` for the Obsidian vault only. (No
 - Non-interactive tshark config sets `wireshark-common/install-setuid: false` and does NOT create the `wireshark` group. For non-root capture, set it up manually: `sudo groupadd -r wireshark; sudo usermod -aG wireshark fomar; sudo chgrp wireshark /usr/bin/dumpcap; sudo chmod 750 /usr/bin/dumpcap; sudo setcap cap_net_raw,cap_net_admin+eip /usr/bin/dumpcap`. User must re-login (or `sg wireshark -c '...'`) for the group to apply.
 - `getcap` is NOT installed by default; only `setcap` (from `libcap2-bin` is missing — install if you need to verify capabilities).
 - Third-party apt repo `/etc/apt/sources.list.d/debian.griffo.io.list` serves ONLY dev tools (deno, zig, forgejo, lazygit, yazi, zed, uv, fzf, termusic, tigerbeetle, uncloud) — no system/kernel/Android/container packages. Don't look here for waydroid, gbinder, etc.
+- `bat` is packaged as `batcat`, not `bat`. Binary: `batcat`. `.zshrc` aliases `bat=batcat` but aliases don't expand in `sh -c` strings or env vars — always use `batcat` directly in `MANPAGER`, scripts, etc.
+- `batcat` 0.25.0 does NOT bundle Catppuccin themes. Install manually: download `.tmTheme` from `catppuccin/bat` GitHub into `~/.config/bat/themes/`, then run `batcat cache --build` to register them.
 
 ## CPU governor / power (RK3562)
 
@@ -81,6 +83,7 @@ Machine-wide setup notes. See `notes/AGENTS.md` for the Obsidian vault only. (No
 ## Shell & environment
 
 - `.zshrc` line 73: `for f in ~/notes/*.env; do . "$f"; done` — dropping any `.env` file in `~/notes/` auto-exports its contents on interactive zsh startup. Preferred way to add new API env vars without editing `.zshrc` directly (e.g. `~/notes/exa.env` for `EXA_API_KEY`).
+- `MANPAGER` with `batcat` needs `MANROFFOPT="-c"` — without it, raw ANSI escape fragments (`4m`, `24m`, etc.) leak through because `col -bx` only strips backspace overstrikes, not SGR codes. `MANROFFOPT="-c"` tells groff not to emit them at all.
 
 ## Conventions
 

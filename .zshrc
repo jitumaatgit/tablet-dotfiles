@@ -65,8 +65,12 @@ alias dotfiles='git --git-dir="$HOME/.dotfiles" --work-tree="$HOME"'
 export EDITOR="nvim"
 export VISUAL="foot nvim"
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/share/fnm:$PATH"
+eval "$(fnm env --use-on-cd --version-file-strategy=recursive)"
 export OPENCODE_DISABLE_AUTOUPDATE=true
 export PLANNOTATOR_DATA_DIR="$HOME/notes/docs/plannotator"
+export MANPAGER="sh -c 'col -bx | batcat -l man -p'"
+export MANROFFOPT="-c"
 
 [ -f ~/notes/opencode-server.env ] && . ~/notes/opencode-server.env
 [ -f ~/notes/deepseek.env ] && . ~/notes/deepseek.env
