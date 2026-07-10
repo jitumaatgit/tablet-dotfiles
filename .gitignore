@@ -36,6 +36,8 @@
 !/.config/tmux/**
 !/.config/tmux-sessionizer
 !/.config/tmux-sessionizer/**
+!/.agents
+!/.agents/**
 !/.local
 !/.local/bin
 !/.local/bin/tmux-sessionizer
