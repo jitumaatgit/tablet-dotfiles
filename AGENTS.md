@@ -51,6 +51,8 @@ Machine-wide setup notes. See `notes/AGENTS.md` for the Obsidian vault only. (No
   dotfiles push
   ```
 - Credential helper is set up by `gh auth setup-git` (HTTPS, run in setup.sh). `.gitconfig` holds `user.name`/`user.email`.
+- **`remote.origin.fetch` refspec was initially missing** — `git fetch` wrote to `FETCH_HEAD` only, never created `origin/main`. Without `origin/main`, `--force-with-lease` rejects pushes (`stale info`) because it has no tracking ref to compare against. Fixed by setting `remote.origin.fetch` to `+refs/heads/*:refs/remotes/origin/*` (2026-07-11). If a fresh clone or rebuild re-introduces this, the same fix applies.
+- After amending a pushed commit, force-push with `GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME git push --force-with-lease origin main`.
 - Lazygit does NOT work with bare repos — UI floods with untracked files. Use CLI (`dotfiles status`, `dotfiles diff`, `dotfiles add -p`).
 - Deploy elsewhere uses `fetch + reset --hard origin/main`, NOT `pull` (pull fails on bare repos with unstaged changes). The tablet is a consumer, not the source of truth.
 - `~/.agents/` is tracked (opt-in `!/.agents/**` in `.gitignore`) for cross-port parity with the windows repo (`jitumaatgit/dotfiles` also tracks it). Tree is text-only — no secrets/caches. `.agents/.skill-lock.json` (skill-registry manifest) drifts across systems as skills update independently — like scoop's `config.json` on Windows. If it starts causing worktree churn, `git update-index --skip-worktree .agents/.skill-lock.json` keeps it tracked but invisible to `status`/`pull` (undo with `--no-skip-worktree`).
