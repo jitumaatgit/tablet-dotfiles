@@ -1,6 +1,7 @@
 ---
 description: git commit and push using scoped commits
 model: deepseek/deepseek-v4-flash
+variant: high
 subtask: true
 ---
 

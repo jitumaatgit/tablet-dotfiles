@@ -12,13 +12,16 @@
   "model": "deepseek/deepseek-v4-pro",
   "agent": {
     "plan": {
-      "model": "deepseek/deepseek-v4-pro"
+      "model": "deepseek/deepseek-v4-pro",
+      "variant": "high"
     },
     "build": {
-      "model": "deepseek/deepseek-v4-pro"
+      "model": "deepseek/deepseek-v4-pro",
+      "variant": "high"
     },
     "docs": {
-      "model": "deepseek/deepseek-v4-pro"
+      "model": "deepseek/deepseek-v4-pro",
+      "variant": "high"
     }
   },
   "small_model": "deepseek/deepseek-v4-flash",

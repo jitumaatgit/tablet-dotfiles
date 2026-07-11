@@ -1,24 +1,29 @@
 ---
 name: toggle-model-provider
 description: >
-  Toggle opencode model provider between opencode-go and deepseek. Use when
-  hitting rate limits on opencode-go, when switching AI providers, or when
-  user mentions "toggle provider", "switch to deepseek", "switch back to
-  opencode-go", or "provider migration".
+  Flip all model refs and the active provider block between opencode-go and
+  deepseek. Use when hitting opencode-go rate limits, or when the user asks
+  to switch/toggle/migrate providers.
 ---
 
 # Toggle Model Provider
 
-Switch all model refs and provider blocks between `opencode-go` and `deepseek`.
+Flip model refs and the provider block between `opencode-go` and `deepseek`.
+The transform is reversible — applying it again returns to the original provider.
 
-## Files
+## Files and fields
 
-| File | Purpose |
-|------|---------|
-| `~/.config/opencode/opencode.json` | Main model refs + provider blocks |
-| `~/.config/opencode/command/commit.md` | YAML frontmatter `model:` on line 3 |
+| File | Fields to flip |
+|------|----------------|
+| `~/.config/opencode/opencode.json` | `model`, `small_model`, `agent.*.model` |
+| `~/.config/opencode/command/commit.md` | YAML frontmatter `model:` (line 3) |
+
+Flip every field in the list. Do not rename provider keys or model keys inside
+the provider block — only the `provider/model` ref strings in the fields above.
 
 ## Model mapping
+
+Read the files to find which provider is active, then apply every matching row:
 
 | opencode-go | deepseek |
 |---|---|
@@ -26,30 +31,24 @@ Switch all model refs and provider blocks between `opencode-go` and `deepseek`.
 | `opencode-go/deepseek-v4-flash` | `deepseek/deepseek-v4-flash` |
 | `opencode-go/glm-5.2` | `deepseek/deepseek-v4-pro` |
 
-Use the mapping table to flip every model ref in the two files. Replace the full
-`provider/model` string on each line — do not rename provider keys or model keys inside
-the provider blocks.
+The `glm-5.2` row is **one-way**: replace `opencode-go/glm-5.2` with
+`deepseek/deepseek-v4-pro` when flipping to deepseek, but never replace
+`deepseek/deepseek-v4-pro` with `glm-5.2` when flipping back (use the
+exact-name row instead).
 
-## Provider blocks in opencode.json
+## Provider block
 
-Both providers live in the same `"provider"` object. Exactly one must be active.
+The `"provider"` object in `opencode.json` contains both provider blocks.
+Exactly one is uncommented (not wrapped in `/*` … `*/`).
 
-**To enable deepseek:**
-1. Uncomment the deepseek block (remove `/*` and `*/`)
-2. Comment out the opencode-go block
+1. Find which block is active (not inside `/*` … `*/`)
+2. Wrap it in JSONC block comments (`/*` before the key, `*/` after the closing brace)
+3. Unwrap the other block (remove its `/*` and `*/`)
 
-**To enable opencode-go:**
-1. Uncomment the opencode-go block
-2. Comment out the deepseek block
+## Completion
 
-Do not delete either block — comment/uncomment only so the toggle is reversible.
+After flipping, every model ref in every file must point at the active
+provider. Scan both files to confirm no old-provider ref remains.
 
-## Env var
-
-The deepseek block references `{env:DEEPSEEK_API_KEY}`. Source it from `~/notes/deepseek.env`
-or set directly before running opencode.
-
-## Rollback note
-
-This skill is intended for temporary provider switches (e.g., rate-limit workarounds).
-Reverse the steps to go back.
+DeepSeek needs `DEEPSEEK_API_KEY` in the environment — source from
+`~/notes/deepseek.env` if not already set.
