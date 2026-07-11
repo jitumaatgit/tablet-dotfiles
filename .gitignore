@@ -15,9 +15,7 @@
 !/.config/wezterm/**
 !/.config/opencode
 !/.config/opencode/**
-!/.config/btop
-!/.config/btop/**
-/.config/btop/btop.log
+/.config/btop
 !/.config/starship.toml
 !/.config/gh
 !/.config/gh/**
