@@ -299,26 +299,6 @@ local function add_section_digest(lines, cache, week_dates, section_name)
   end
 end
 
-local function add_log_metadata(lines, cache, week_dates)
-  for _, d in ipairs(week_dates) do
-    local content = cache[d.date_str]
-    local link = string.format("[[30-dailynotes/%04d/%02d/%s|%s %s]]", d.date.year, d.date.month, d.date_str, d.day_name, d.date_str)
-    if content then
-      local sleep = extract_sleep(content)
-      local energy = extract_energy_avg(content)
-      local mood = extract_mood_avg(content)
-      local parts = {}
-      table.insert(parts, link)
-      if sleep then table.insert(parts, string.format("sleep: %.1f", sleep)) end
-      if energy then table.insert(parts, string.format("focus: %.1f", energy)) end
-      if mood then table.insert(parts, string.format("mood: %.1f", mood)) end
-      table.insert(lines, "- " .. table.concat(parts, " · "))
-    else
-      table.insert(lines, "- " .. link)
-    end
-  end
-end
-
 local function generate_weekly_note_content(iso_data, week_dates)
   local lines = {}
   local sleep_avg, energy_avg, mood_avg = calculate_week_stats(week_dates)
@@ -401,11 +381,6 @@ table.insert(lines, "## Health dashboard")
   table.insert(lines, "## Tangent Parking Lot")
   table.insert(lines, "")
   add_section_digest(lines, daily_cache, week_dates, "Tangent Parking Lot")
-
-  table.insert(lines, "---")
-  table.insert(lines, "## Log")
-  table.insert(lines, "")
-  add_log_metadata(lines, daily_cache, week_dates)
 
   table.insert(lines, "---")
   table.insert(lines, "## Summary Digest")

@@ -1,114 +1,52 @@
 local M = {}
 
--- Configuration
 M.config = {
   timestamp_format = "> Completed: %Y-%m-%d %H:%M",
-  completed_headings = { "completed", "done", "finished" },
-  daily_notes_folder = "30%-dailynotes",
-  log_heading = "log",
+  completed_heading = "completed",
+  canceled_heading = "canceled",
 }
 
--- Check if file is in DailyNotes folder
-local function is_daily_notes_file(filepath)
-  if not filepath then return false end
-  return filepath:match(M.config.daily_notes_folder) ~= nil
-end
-
--- Find completed section (case-insensitive) - works with any heading level
--- Returns: section_start_line, section_end_line (or nil if not found)
-local function find_completed_section(lines)
-  local start_line = nil
-  local end_line = nil
-  local heading_line = nil
-
+local function find_section_headings(lines)
+  local sections = {}
   for i, line in ipairs(lines) do
     if line:match("^#+") then
-      local heading_text = line:lower():gsub("^#+%s*", ""):gsub("%s*$", "")
-      for _, keyword in ipairs(M.config.completed_headings) do
-        if heading_text == keyword then
-          start_line = i
-          heading_line = line
-          break
-        end
-      end
-      if heading_text == M.config.log_heading and start_line then
-        -- Found Log section after Completed, so Completed ends here
-        end_line = i - 1
-        break
+      local text = line:lower():gsub("^#+%s*", ""):gsub("%s*$", "")
+      if text == M.config.completed_heading or text == M.config.canceled_heading then
+        table.insert(sections, { line = i, kind = text })
       end
     end
   end
-
-  if start_line and not end_line then
-    end_line = #lines
-  end
-
-  return start_line, end_line, heading_line
+  return sections
 end
 
--- Find Log section (case-insensitive) - works with any heading level
-local function find_log_section(lines)
-  for i, line in ipairs(lines) do
-    if line:match("^#+") then
-      local heading_text = line:lower():gsub("^#+%s*", ""):gsub("%s*$", "")
-      if heading_text == M.config.log_heading then
-        return i
-      end
+local function is_in_section(line_num, sections, kind)
+  for j, s in ipairs(sections) do
+    if s.kind == kind then
+      local next_s = sections[j + 1]
+      local end_line = next_s and (next_s.line - 1) or 999999
+      return line_num > s.line and line_num <= end_line
     end
   end
-  return nil
+  return false
 end
 
--- Find the best position for Completed section
-local function find_completed_section_position(lines, filepath)
-  local completed_start, completed_end, heading = find_completed_section(lines)
-  if completed_start then
-    return completed_start, completed_end, false, heading -- Section exists
-  end
-
-  -- Need to create section
-  local is_daily = is_daily_notes_file(filepath)
-
-  if is_daily then
-    -- For DailyNotes: place above Log section
-    local log_line = find_log_section(lines)
-    if log_line then
-      return log_line, log_line - 1, true, nil -- Insert before Log
-    end
-  end
-
-  -- Default: end of file
-  return #lines + 1, #lines, true, nil
-end
-
--- Extract task group (task + nested subtasks)
 local function extract_task_group(lines, start_line)
   local task_group = {}
-  local base_indent = nil
   local end_line = start_line
-
-  -- Get the checked task line
   local task_line = lines[start_line]
   table.insert(task_group, task_line)
+  local base_indent = task_line:match("^(%s*)")
 
-  -- Determine base indentation level
-  base_indent = task_line:match("^(%s*)")
-
-  -- Look for nested subtasks
   for i = start_line + 1, #lines do
     local line = lines[i]
     local indent = line:match("^(%s*)")
-
-    -- Check if this line is more indented (subtask) or empty line
     if #indent > #base_indent then
       table.insert(task_group, line)
       end_line = i
     elseif line:match("^%s*$") then
-      -- Empty line - include it if it's within the task group
       table.insert(task_group, line)
       end_line = i
     else
-      -- Less or equal indent - task group ends
       break
     end
   end
@@ -116,7 +54,6 @@ local function extract_task_group(lines, start_line)
   return task_group, end_line
 end
 
--- Find the nearest heading above a line
 local function find_nearest_heading(lines, line_num)
   for i = line_num - 1, 1, -1 do
     local heading = lines[i]:match("^#+%s+(.+)$")
@@ -127,7 +64,6 @@ local function find_nearest_heading(lines, line_num)
   return nil
 end
 
--- Add heading context to the task line
 local function add_heading_context(task_line, heading)
   local prefix, text = task_line:match("^(%s*%-%s*%[[xX]%]%s*)(.*)$")
   if prefix and text then
@@ -136,157 +72,116 @@ local function add_heading_context(task_line, heading)
   return task_line
 end
 
--- Add timestamp inline to the task line
 local function add_timestamp_inline(task_line)
   local timestamp = os.date(M.config.timestamp_format)
-  -- Append timestamp to the end of the task line
   return task_line .. " " .. timestamp
 end
 
--- Check if a line is within the Completed section
-local function is_in_completed_section(line_num, completed_start, completed_end)
-  if not completed_start or not completed_end then
-    return false
-  end
-  return line_num > completed_start and line_num <= completed_end
-end
-
--- Main function to process checkbox completion
 function M.process_checkbox_completion()
   local bufnr = vim.api.nvim_get_current_buf()
   local filepath = vim.api.nvim_buf_get_name(bufnr)
+  if not filepath:match("%.md$") then return end
 
-  -- Only process markdown files
-  if not filepath:match("%.md$") then
-    return
-  end
-
-  -- Get all lines
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 
-  -- Find existing Completed section boundaries
-  local completed_start, completed_end, completed_heading = find_completed_section(lines)
+  local sections = find_section_headings(lines)
 
-  -- Find or create Completed section position
-  local completed_pos, completed_end_pos, needs_creation, _ = find_completed_section_position(lines, filepath)
-
-  -- Collect all completed task groups (outside of Completed section)
   local task_groups = {}
-  local processed_lines = {}
   local i = 1
-
   while i <= #lines do
-    local line = lines[i]
-
-    -- Skip if in Completed section
-    if is_in_completed_section(i, completed_start, completed_end) then
-      i = i + 1
-      goto continue
-    end
-
-    -- Check if this is a completed task with "- [x]" format
-    if line:match("^%s*%-%s*%[[xX]%]") and not line:match("> Completed:") then
-      -- Extract the entire task group
-      local task_group, end_line = extract_task_group(lines, i)
-
-      -- Add heading context and timestamp to first line
-      local heading = find_nearest_heading(lines, i)
-      if heading then
-        task_group[1] = add_heading_context(task_group[1], heading)
+    local in_completed = is_in_section(i, sections, M.config.completed_heading)
+    local in_canceled = is_in_section(i, sections, M.config.canceled_heading)
+    if not in_completed and not in_canceled then
+      if lines[i]:match("^%s*%-%s*%[[xX]%]") and not lines[i]:match("> Completed:") then
+        local group_lines, end_i = extract_task_group(lines, i)
+        local heading = find_nearest_heading(lines, i)
+        if heading then
+          group_lines[1] = add_heading_context(group_lines[1], heading)
+        end
+        group_lines[1] = add_timestamp_inline(group_lines[1])
+        table.insert(task_groups, { start_i = i, end_i = end_i, group = group_lines })
+        i = end_i + 1
+      else
+        i = i + 1
       end
-      task_group[1] = add_timestamp_inline(task_group[1])
-
-      -- Store task group and mark lines for removal
-      table.insert(task_groups, {
-        group = task_group,
-        start_line = i,
-        end_line = end_line
-      })
-
-      -- Mark these lines as processed
-      for j = i, end_line do
-        processed_lines[j] = true
-      end
-
-      -- Skip past this task group
-      i = end_line + 1
     else
       i = i + 1
     end
-
-    ::continue::
   end
 
-  -- If no completed tasks found, exit
-  if #task_groups == 0 then
-    return
-  end
+  if #task_groups == 0 then return end
 
-  -- Create Completed section if needed
-  if needs_creation then
-    if is_daily_notes_file(filepath) and completed_pos <= #lines then
-      -- Insert before Log section (no blank line)
-      table.insert(lines, completed_pos, "## Completed")
-      completed_pos = completed_pos + 1
-    else
-      -- Add at end (no blank line)
-      table.insert(lines, "## Completed")
-      completed_pos = #lines + 1
+  local to_remove = {}
+  for _, tg in ipairs(task_groups) do
+    for j = tg.end_i, tg.start_i, -1 do
+      table.insert(to_remove, j)
     end
-  else
-    -- Move past the heading line
-    completed_pos = completed_pos + 1
+    local trailing = tg.end_i + 1
+    if trailing <= #lines and lines[trailing]:match("^%s*$") then
+      table.insert(to_remove, trailing)
+    end
+  end
+  table.sort(to_remove, function(a, b) return a > b end)
+  local seen = {}
+  for _, idx in ipairs(to_remove) do
+    if not seen[idx] then
+      seen[idx] = true
+      table.remove(lines, idx)
+    end
   end
 
-  -- Collect all non-empty lines from all task groups in reverse order (for insertion)
-  local all_tasks = {}
-  for _, task_data in ipairs(task_groups) do
-    -- Insert task lines in reverse order
-    for j = #task_data.group, 1, -1 do
-      local task_line = task_data.group[j]
-      if task_line:match("^%s*$") == nil then
-        table.insert(all_tasks, task_line)
+  sections = find_section_headings(lines)
+  local has_completed = false
+  local has_canceled = false
+  for _, s in ipairs(sections) do
+    if s.kind == M.config.completed_heading then has_completed = true end
+    if s.kind == M.config.canceled_heading then has_canceled = true end
+  end
+
+  if not has_completed then
+    table.insert(lines, "## Completed")
+    table.insert(lines, "")
+    table.insert(lines, "## Canceled")
+    has_completed = true
+    has_canceled = true
+    sections = find_section_headings(lines)
+  end
+
+  local insert_pos = nil
+  local cancel_pos = nil
+  for _, s in ipairs(sections) do
+    if s.kind == M.config.completed_heading then
+      insert_pos = s.line + 1
+    end
+    if s.kind == M.config.canceled_heading then
+      cancel_pos = s.line
+    end
+  end
+  if not insert_pos then insert_pos = #lines + 1 end
+
+  while insert_pos <= #lines and lines[insert_pos]:match("^%s*$") do
+    insert_pos = insert_pos + 1
+  end
+  if cancel_pos and insert_pos >= cancel_pos then
+    insert_pos = cancel_pos
+  end
+
+  for _, tg in ipairs(task_groups) do
+    for _, tl in ipairs(tg.group) do
+      if tl:match("^%s*$") == nil then
+        table.insert(lines, insert_pos, tl)
+        insert_pos = insert_pos + 1
       end
     end
   end
 
-  -- Insert all tasks at the Completed section position
-  for _, task_line in ipairs(all_tasks) do
-    table.insert(lines, completed_pos, task_line)
-  end
-
-  -- Remove original task groups (in reverse order to maintain indices)
-  -- Also remove trailing blank lines
-  local lines_to_remove = {}
-  for _, task_data in ipairs(task_groups) do
-    for j = task_data.start_line, task_data.end_line do
-      table.insert(lines_to_remove, j)
-    end
-    -- Check for and remove trailing blank line
-    local next_line = task_data.end_line + 1
-    if next_line <= #lines and lines[next_line]:match("^%s*$") then
-      table.insert(lines_to_remove, next_line)
-    end
-  end
-
-  -- Sort in reverse order for safe removal
-  table.sort(lines_to_remove, function(a, b) return a > b end)
-
-  -- Remove lines
-  for _, line_num in ipairs(lines_to_remove) do
-    table.remove(lines, line_num)
-  end
-
-  -- Update buffer (user will see changes, can save manually)
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
 end
 
--- Setup function
 function M.setup(opts)
   opts = opts or {}
   M.config = vim.tbl_deep_extend("force", M.config, opts)
 
-  -- Create autocommand for BufWritePost (trigger on file save)
   vim.api.nvim_create_autocmd("BufWritePost", {
     pattern = "*.md",
     callback = function()
