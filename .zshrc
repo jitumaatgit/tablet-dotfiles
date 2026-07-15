@@ -40,15 +40,18 @@ alias zi='z -i'
 alias vim='nvim'
 alias oc='opencode'
 occ() {
-  local mode="commit" prompt=""
-  if [ $# -gt 0 ]; then
-    mode="prompt"
-    prompt="$*"
-  fi
   if git rev-parse --git-dir >/dev/null 2>&1; then
-    oc run --command "$mode" ${prompt:+"$prompt"}
+    if [ $# -gt 0 ]; then
+      opencode run "$@"
+      return
+    fi
+    opencode run --command commit
   else
-    GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME oc run --command "$mode" ${prompt:+"$prompt"}
+    if [ $# -gt 0 ]; then
+      GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME opencode run "$@"
+      return
+    fi
+    GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME opencode run --command commit
   fi
 }
 function ocp {

@@ -9,22 +9,22 @@
     "@tarquinen/opencode-dcp",
     "@plannotator/opencode@latest"
   ],
-  "model": "opencode-go/deepseek-v4-flash",
+  "model": "deepseek/deepseek-v4-flash",
   "agent": {
     "plan": {
-      "model": "opencode-go/glm-5.2",
+      "model": "deepseek/deepseek-v4-pro",
       "variant": "high"
     },
     "build": {
-      "model": "opencode-go/glm-5.2",
+      "model": "deepseek/deepseek-v4-pro",
       "variant": "high"
     },
     "docs": {
-      "model": "opencode-go/deepseek-v4-pro",
+      "model": "deepseek/deepseek-v4-pro",
       "variant": "high"
     }
   },
-  "small_model": "opencode-go/deepseek-v4-flash",
+  "small_model": "deepseek/deepseek-v4-flash",
   "mcp": {
     "kagi": {
       "type": "local",
@@ -41,6 +41,7 @@
     }
   },
   "provider": {
+    /*
     "opencode-go": {
       "models": {
         "kimi-k2.6": {
@@ -70,7 +71,7 @@
         }
       }
     },
-    /*
+    */
     "deepseek": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "DeepSeek",
@@ -123,6 +124,5 @@
         }
       }
     }
-    */
   }
 }
