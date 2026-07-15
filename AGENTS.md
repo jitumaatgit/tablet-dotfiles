@@ -88,6 +88,18 @@ Machine-wide setup notes. See `notes/AGENTS.md` for the Obsidian vault only. (No
 - `.zshrc` line 73: `for f in ~/notes/*.env; do . "$f"; done` — dropping any `.env` file in `~/notes/` auto-exports its contents on interactive zsh startup. Preferred way to add new API env vars without editing `.zshrc` directly (e.g. `~/notes/exa.env` for `EXA_API_KEY`).
 - `MANPAGER` with `batcat` needs `MANROFFOPT="-c"` — without it, raw ANSI escape fragments (`4m`, `24m`, etc.) leak through because `col -bx` only strips backspace overstrikes, not SGR codes. `MANROFFOPT="-c"` tells groff not to emit them at all.
 
+## Offpunk — offline-first browser (web/gemini/gopher)
+
+- `offpunk` is a CLI, offline-first browser that caches every page you visit as plain text under `~/.cache/offpunk/`.
+- **When you cannot fetch a URL** (JS-required pages, bot-blocked sites, paywalls, etc.), tell the user to visit it with offpunk so it gets cached. Then you can read the cached copy from `~/.cache/offpunk/`.
+- The user workflow: `offpunk` → `go <url>` → `offline` → the page is now cached locally for you to read.
+
+## OpenCode
+
+### Compaction → handoff gate
+
+Before invoking the `compress` tool for ANY reason (DCP nudge, manual compaction, context-pressure cleanup), you MUST first ask: "Want to /handoff first?" If the user says yes, invoke the handoff skill (`~/.agents/skills/handoff/SKILL.md`) before compressing. If they say no, proceed with compression immediately.
+
 ## Conventions
 
 - All directories and files must be lowercase-kebab-case unless explicitly told otherwise.
