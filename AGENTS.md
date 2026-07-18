@@ -37,11 +37,31 @@ Machine-wide setup notes. See `notes/AGENTS.md` for the Obsidian vault only. (No
 
 ## Dotfiles (bare repo)
 
-- Dotfiles live in a **bare git repo** at `~/.dotfiles` with work-tree = `$HOME`. Files like `.zshrc` live directly in `~` — no symlinks. Remote: https://github.com/jitumaatgit/tablet-dotfiles (branch `main`).
-- The `dotfiles` alias (`git --git-dir=$HOME/.dotfiles --work-tree=$HOME`) only exists in interactive zsh. From a script/non-interactive shell, use the full form:
-  ```
-  git --git-dir=$HOME/.dotfiles --work-tree=$HOME <command>
-  ```
+### ⚠️ RULE: EVERY `git` COMMAND THAT TOUCHES A HOMEDIR FILE MUST GO THROUGH DOTFILES
+
+$HOME is managed by a **bare git repo** at `~/.dotfiles` (work-tree = `$HOME`). Plain `git` commands (e.g., `git status`, `git diff`, `git add`, `git commit`) operate on whatever repo happens to be in `$PWD` — NOT on the dotfiles repo. This silently touches the wrong repo, causing no-op commits, missing diffs, and broken push workflows.
+
+AUTO-DETECT BEFORE EVERY `git` INVOCATION: if the files you are about to operate on live anywhere under `$HOME`, instantly switch to the dotfiles form. Do NOT run plain `git`. Do NOT ask — just do it.
+
+**Always use one of these forms instead of plain `git`:**
+
+```
+# Preferred — the `dotfiles` alias (defined in ~/.zshrc):
+dotfiles <command>
+
+# Fallback — works in non-interactive shells too:
+git --git-dir=$HOME/.dotfiles --work-tree=$HOME <command>
+
+# For subprocesses that spawn git (propagates to children via env):
+GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME <command>
+```
+
+**Auto-detect check** — if any target path is under `$HOME`, replace `git` with `dotfiles`:
+```bash
+# If this succeeds, the file IS tracked — use dotfiles:
+git --git-dir=$HOME/.dotfiles --work-tree=$HOME ls-files --error-unmatch <file>
+```
+
 - CLI flags (`--git-dir`/`--work-tree`) only apply to that one git invocation. For **subprocesses that spawn git** (e.g. opencode's agent), use env vars instead — they propagate to children: `GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME <command>`. The `occ()` function in `~/.zshrc` uses this pattern with `git rev-parse --git-dir` to auto-detect local repos vs. bare-repo-only dirs.
 - `.gitignore` is **deny-by-default**: starts with `/*` then `!/path` opt-ins. New root-level files/dirs must be explicitly added to `.gitignore` before they can be tracked.
 - Push workflow:
@@ -53,7 +73,7 @@ Machine-wide setup notes. See `notes/AGENTS.md` for the Obsidian vault only. (No
 - Credential helper is set up by `gh auth setup-git` (HTTPS, run in setup.sh). `.gitconfig` holds `user.name`/`user.email`.
 - **`remote.origin.fetch` refspec was initially missing** — `git fetch` wrote to `FETCH_HEAD` only, never created `origin/main`. Without `origin/main`, `--force-with-lease` rejects pushes (`stale info`) because it has no tracking ref to compare against. Fixed by setting `remote.origin.fetch` to `+refs/heads/*:refs/remotes/origin/*` (2026-07-11). If a fresh clone or rebuild re-introduces this, the same fix applies.
 - After amending a pushed commit, force-push with `GIT_DIR=$HOME/.dotfiles GIT_WORK_TREE=$HOME git push --force-with-lease origin main`.
-- Lazygit does NOT work with bare repos — UI floods with untracked files. Use CLI (`dotfiles status`, `dotfiles diff`, `dotfiles add -p`).
+- Lazygit does NOT work with bare repos — UI floods with untracked files. See ⚠️ RULE above — always use CLI (`dotfiles status`, `dotfiles diff`, `dotfiles add -p`).
 - Deploy elsewhere uses `fetch + reset --hard origin/main`, NOT `pull` (pull fails on bare repos with unstaged changes). The tablet is a consumer, not the source of truth.
 - `~/.agents/` is tracked (opt-in `!/.agents/**` in `.gitignore`) for cross-port parity with the windows repo (`jitumaatgit/dotfiles` also tracks it). Tree is text-only — no secrets/caches. `.agents/.skill-lock.json` (skill-registry manifest) drifts across systems as skills update independently — like scoop's `config.json` on Windows. If it starts causing worktree churn, `git update-index --skip-worktree .agents/.skill-lock.json` keeps it tracked but invisible to `status`/`pull` (undo with `--no-skip-worktree`).
 
