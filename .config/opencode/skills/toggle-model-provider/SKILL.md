@@ -52,3 +52,28 @@ provider. Scan both files to confirm no old-provider ref remains.
 
 DeepSeek needs `DEEPSEEK_API_KEY` in the environment — source from
 `~/notes/deepseek.env` if not already set.
+
+## Verify and report (mandatory)
+
+Do NOT stop after editing. Report what you did so the user can trust the
+state without guessing. The model NAMES (`deepseek-v4-flash`,
+`deepseek-v4-pro`) are identical across both providers, so the name alone
+is NOT a reliable signal — users regularly mistake an active opencode-go
+run for the deepseek provider because the name says "deepseek". The only
+reliable signals are listed below.
+
+1. Determine the active provider: the provider block in `opencode.json`
+   that is NOT wrapped in `/* … */` is active; the other is inactive. Name
+   it out loud in the report.
+2. Confirm no active ref points at the inactive provider:
+   `rg -n 'deepseek/deep|opencode-go/glm' .config/opencode/`
+   should return nothing outside this SKILL.md (commented lines and this
+   file's own table are fine).
+3. State the expected opencode UI display, since this is what the user
+   will actually see in a session:
+   - opencode-go active → models show `from NVIDIA NIM` (e.g.
+     "deepseek v4 flash from NVIDIA NIM", "glm 5.2 from NVIDIA NIM").
+   - deepseek active → models show `from DeepSeek`.
+4. Tell the user explicitly: "the model name is shared between providers;
+   trust the `from <X>` suffix, not the name. `from NVIDIA NIM` means
+   opencode-go is active."

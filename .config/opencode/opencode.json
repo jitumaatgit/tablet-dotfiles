@@ -9,22 +9,19 @@
     "@tarquinen/opencode-dcp",
     "@plannotator/opencode@latest"
   ],
-  "model": "opencode-go/deepseek-v4-flash",
+  "model": "nvidia/z-ai/glm-5.2",
   "agent": {
     "plan": {
-      "model": "opencode-go/deepseek-v4-pro",
-      "variant": "high"
+      "model": "nvidia/moonshotai/kimi-k2.6"
     },
     "build": {
-      "model": "opencode-go/glm-5.2",
-      "variant": "high"
+      "model": "nvidia/z-ai/glm-5.2"
     },
     "docs": {
-      "model": "opencode-go/deepseek-v4-pro",
-      "variant": "high"
+      "model": "nvidia/z-ai/glm-5.2"
     }
   },
-  "small_model": "opencode-go/deepseek-v4-flash",
+  "small_model": "opencode/deepseek-v4-flash-free",
   "mcp": {
     "kagi": {
       "type": "local",
@@ -41,6 +38,25 @@
     }
   },
   "provider": {
+    "nvidia": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "NVIDIA NIM",
+      "options": {
+        "baseURL": "https://integrate.api.nvidia.com/v1",
+        "apiKey": "{env:NVIDIA_API_KEY}"
+      },
+      "models": {
+        "z-ai/glm-5.2": {
+          "name": "GLM 5.1"
+        },
+        "moonshotai/kimi-k2.6": {
+          "name": "Kimi K2.6"
+        },
+        "minimaxai/minimax-m2.7": {
+          "name": "MiniMax M2.7"
+        }
+      }
+    },
     "opencode-go": {
       "models": {
         "kimi-k2.6": {
@@ -69,60 +85,6 @@
           }
         }
       }
-    },
-    /*
-    "deepseek": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "DeepSeek",
-      "options": {
-        "baseURL": "https://api.deepseek.com",
-        "apiKey": "{env:DEEPSEEK_API_KEY}"
-      },
-      "models": {
-        "deepseek-v4-flash": {
-          "name": "deepseek-v4-flash",
-          "limit": {
-            "context": 1048576,
-            "output": 262144
-          },
-          "variants": {
-            "high": {
-              "thinking": {
-                "type": "enabled",
-                "budgetTokens": 8192
-              }
-            },
-            "max": {
-              "thinking": {
-                "type": "enabled",
-                "budgetTokens": 32000
-              }
-            }
-          }
-        },
-        "deepseek-v4-pro": {
-          "name": "deepseek-v4-pro",
-          "limit": {
-            "context": 1048576,
-            "output": 262144
-          },
-          "variants": {
-            "high": {
-              "thinking": {
-                "type": "enabled",
-                "budgetTokens": 8192
-              }
-            },
-            "max": {
-              "thinking": {
-                "type": "enabled",
-                "budgetTokens": 32000
-              }
-            }
-          }
-        }
-      }
     }
-    */
   }
 }
