@@ -80,7 +80,10 @@ export PLANNOTATOR_DATA_DIR="$HOME/notes/docs/plannotator"
 export MANPAGER="sh -c 'col -bx | batcat -l man -p'"
 export MANROFFOPT="-c"
 export NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt
+export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
 
 [ -f ~/notes/opencode-server.env ] && . ~/notes/opencode-server.env
 [ -f ~/notes/deepseek.env ] && . ~/notes/deepseek.env
 for f in ~/notes/*.env; do [ -f "$f" ] && . "$f"; done
+
+[ -f ~/.free-coding-models.env ] && . ~/.free-coding-models.env  # free-coding-models-env
