@@ -1,7 +1,7 @@
 ---
 description: git commit and push using scoped commits
 model: opencode-go/deepseek-v4-flash
-variant: high
+variant: max
 subtask: true
 ---
 
