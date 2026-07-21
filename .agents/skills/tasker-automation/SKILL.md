@@ -76,3 +76,8 @@ See [REFERENCE.md](REFERENCE.md) for: event/state/action catalogs (§1-3), XML s
 
 **Modification**
 - **Preserve original IDs/names** when modifying existing XML, unless user explicitly asks to rename
+
+**Variable Search Replace (598)**
+- **Stores WHOLE matches in the array, not capture groups**: `%array1`, `%array2` etc. contain the full text matched by the search pattern, not regex capture groups. Tasker's implementation discards capture groups immediately after the action completes.
+- **Use lookbehind/lookahead instead of capture groups** when you need to extract only part of a match: `(?<=prefix)suffix` matches `suffix` only, without consuming `prefix`.
+- **Example**: to extract digits from `reply 1867694`, use `(?<=reply\s)\d{5,8}` (not `reply\s+(\d{5,8})`). The former stores `1867694`; the latter stores `reply 1867694`.

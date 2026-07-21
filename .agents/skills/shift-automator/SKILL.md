@@ -75,6 +75,15 @@ Tuning guide:
 - **`undesired_hours`**: pairs of `[start, end]`. With `veto_undesired_hours: true`, these hard-block instead of penalize.
 - **Veto gate thresholds**: `weekly_hours_cap`, `day_hours_cap`, `post_cap_break_hours`, `rest_gap_sleep_hours`, `wakefulness_gate_*`
 
+### Tasker Debugging
+
+When diagnosing Tasker-driven claim SMS issues (profile not firing, wrong claim body):
+
+- **Code 598 (Variable Search Replace) stores WHOLE matches, not capture groups**: `%claim1` is the full regex match (e.g., `reply 1867694`), not the first capture group. Tasker discards capture groups. Use lookbehind regex (`(?<=reply\s)\d{5,8}`) to extract only digits from a match.
+- **Received Text Sender field matching**: shortcodes (`337889`) match on `contains` without country code. Regular phone numbers stored as `+1XXXXXXXXXX` in SMS DB need `+1` prefix in the Sender field, or leave the field empty to match any sender.
+- **`content://sms/inbox` stores phone numbers with `+1` prefix; `content://sms/sent` stores without**: `content query --where "address=+1..."` fails (URL mangling of `+`). Query by `date` to bypass.
+- **Runlog at `/sdcard/Tasker/log/runlog.txt`**: `P` line = profile fired, `T Running` = task started, `A Err` = action error, `A OK` = action success. Profile fire without task execution = condition gate failed.
+
 ## Reference
 
 See [REFERENCE.md](REFERENCE.md) for full architecture, module internals, data flow, config key reference, and rule contract details.
