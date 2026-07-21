@@ -15,13 +15,13 @@
       "model": "nvidia/moonshotai/kimi-k2.6"
     },
     "build": {
-      "model": "nvidia/z-ai/glm-5.2"
+      "model": "nvidia/minimaxai/minimax-m3"
     },
     "docs": {
       "model": "nvidia/z-ai/glm-5.2"
     }
   },
-  "small_model": "opencode/deepseek-v4-flash-free",
+  "small_model": "nvidia/minimaxai/minimax-m3",
   "mcp": {
     "kagi": {
       "type": "local",
@@ -54,6 +54,9 @@
         },
         "minimaxai/minimax-m2.7": {
           "name": "MiniMax M2.7"
+        },
+        "minimaxai/minimax-m3": {
+          "name": "MiniMax M3"
         }
       }
     },
