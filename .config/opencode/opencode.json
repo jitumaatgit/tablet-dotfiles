@@ -6,7 +6,6 @@
     "external_directory": "allow"
   },
   "plugin": [
-    "@tarquinen/opencode-dcp",
     "@plannotator/opencode@latest"
   ],
   "model": "nvidia/z-ai/glm-5.2",
@@ -83,8 +82,8 @@
         },
         "glm-5.2": {
           "variants": {
-            "high": { "thinking": { "type": "enabled", "budgetTokens": 8192 } },
-            "max": { "thinking": { "type": "enabled", "budgetTokens": 32000 } }
+            "high": { "reasoningEffort": "high" },
+            "max": { "reasoningEffort": "max" }
           }
         }
       }
